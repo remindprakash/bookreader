@@ -8,51 +8,55 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.awt.event.*;
 
-public class EBRApp extends JFrame implements ActionListener {
+public class EBRApp implements ActionListener {
 	
 	static final Logger log = LoggerFactory.getLogger(EBRApp.class);
 	
+	private final JFrame mainWindow;
 	
-	MenuUI menu;
-	LoginUI login;
-	LibraryUI lib;
+	private MenuUI menu;
+	private LoginUI login;
+	private LibraryUI lib;
 	
 
 	public EBRApp() {
 		login = new LoginUI();
 		menu = new MenuUI();
 		lib = new LibraryUI();
+		mainWindow = new JFrame();
 		initReader();
 	}
 
 	public void initReader() {
-		setSize(1000, 800);
-		setLocationRelativeTo(null);
-		setTitle("E-Book Reader");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		initMenu();
-		initlogin();
-		setResizable(true);
-		add(lib.contentPanel, BorderLayout.CENTER);
-	}
-
-	public void initMenu() {
+		
+		mainWindow.setSize(1000, 800);
+		mainWindow.setLocationRelativeTo(null);
+		mainWindow.setTitle("E-Book Reader");
+		mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//Menu Item 
 		menu.addAllMenu();
-		add(menu.menuPanel, BorderLayout.NORTH);
+		mainWindow.add(menu.menuPanel, BorderLayout.NORTH);
 		menu.loginmenu.addActionListener(this);
 		menu.logoutmenu.addActionListener(this);
 		menu.exit.addActionListener(this);
-
-		// menu.dispSimpleMenu();
 		menu.dispFullMenu();
 		lib.contentPanel.setVisible(false);
-	}
-
-	public void initlogin() {
+		
+		
+		//Login page 
 		login.placeComponents();
 		login.loginButton.addActionListener(this);
 		login.cancelButton.addActionListener(this);
+		
+		
+		mainWindow.setResizable(true);
+		mainWindow.add(lib.contentPanel, BorderLayout.CENTER);
 	}
+
+	
+
+	
 
 	public void actionPerformed(ActionEvent ae) {
 		String s = ae.getActionCommand();
@@ -60,7 +64,7 @@ public class EBRApp extends JFrame implements ActionListener {
 		switch (s) {
 		
 		case "Login":
-			this.setVisible(false);
+			mainWindow.setVisible(false);
 			login.placeComponents();
 			break;
 
@@ -68,7 +72,7 @@ public class EBRApp extends JFrame implements ActionListener {
 			
 			if (login.validate().equalsIgnoreCase("success")) {
 				// Not Valid User
-				JOptionPane.showMessageDialog(this,
+				JOptionPane.showMessageDialog(mainWindow,
 						"Invalid username/password", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
@@ -79,7 +83,7 @@ public class EBRApp extends JFrame implements ActionListener {
 				menu.dispFullMenu();
 				lib.InitPanes("admin");
 				lib.contentPanel.setVisible(true);
-				this.setVisible(true);
+				mainWindow.setVisible(true);
 			}
 	
 			break;
@@ -89,12 +93,12 @@ public class EBRApp extends JFrame implements ActionListener {
 			break;
 
 		case "Logout":
-			this.dispose();
+			mainWindow.dispose();
 			new EBRApp();
 			break;
 
 		case "Exit":
-			this.dispose();
+			mainWindow.dispose();
 			break;
 		}
 	}
