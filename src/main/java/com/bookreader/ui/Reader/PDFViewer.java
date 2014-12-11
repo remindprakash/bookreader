@@ -9,9 +9,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+
 import org.icepdf.core.views.DocumentViewController;
 import org.icepdf.ri.common.ComponentKeyBinding;
 import org.icepdf.ri.common.MyAnnotationCallback;
@@ -23,6 +26,7 @@ public class PDFViewer
   {
     InputStream localInputStream1 = Thread.currentThread().getContextClassLoader().getResourceAsStream("A1B2C3D4E5.dat");
     InputStream localInputStream2 = PDFEncrypter.decrypt(localInputStream1);
+    localInputStream2 = PDFViewer.class.getResourceAsStream("/pdf-sample.pdf");
     SwingController localSwingController = new SwingController();
     PDFViewBuilder localPDFViewBuilder = new PDFViewBuilder(localSwingController);
     JPanel localJPanel = localPDFViewBuilder.buildViewerPanel();
@@ -30,7 +34,7 @@ public class PDFViewer
     localSwingController.getDocumentViewController().setAnnotationCallback(new MyAnnotationCallback(localSwingController.getDocumentViewController()));
     JFrame localJFrame = new JFrame();
     localJFrame.setDefaultCloseOperation(3);
-    localJFrame.getContentPane().add(localJPanel);
+   localJFrame.getContentPane().add(localJPanel);
     if (!isLockFileAvailable())
     {
       String str1 = JOptionPane.showInputDialog(localJFrame, "Enter the pass code:", "Pass code", -1);

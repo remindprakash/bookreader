@@ -109,12 +109,18 @@ public class LibraryUI
         accordion = new JSCAccordion();
         username = user;
        //Read library file line-by-line & create data structures 
-       PopulateData();
+       //PopulateData();
        //create left panel
        Init_LeftPane();
        //create right panel
-       GeneralShelf_RightPane();
-
+       //GeneralShelf_RightPane();
+       
+       EpubView EpubView=new EpubView();
+       InputStream bookStream = null;
+       bookStream = LibraryUI.class.getResourceAsStream("/tirukkural.epub");
+       
+       rightPanel=EpubView.Viewer(bookStream);
+       
        //add right Pane to main  
         contentPanel.add(rightPanel);
        //contentPanel.setRightComponent(rightPanel);

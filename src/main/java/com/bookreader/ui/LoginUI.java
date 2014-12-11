@@ -1,62 +1,85 @@
 package com.bookreader.ui;
 
 import javax.swing.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 
+public class LoginUI {
+	
+	static final Logger log = LoggerFactory.getLogger(LoginUI.class);
+	
+	public JPanel loginpanel;
+	public JLabel userLabel, passwordLabel;
+	public JTextField userText;
+	public JPasswordField passwordText;
+	public JButton loginButton, cancelButton;
+	public JFrame loginframe;
 
-public class LoginUI
-{
-    public JPanel Loginpanel;
-    public JLabel loginlbl,usernamelbl,passwordlbl;
-    public JTextField usernametxt;
-    public JPasswordField pwdtxt;
-    public JButton login,cancel;
-    public JFrame loginframe;
-    
-    LoginUI()
-    {
-        Loginpanel = new JPanel(new GridLayout(3,1));
-        loginlbl = new JLabel();
-        usernamelbl = new JLabel();
-        passwordlbl = new JLabel();
-        usernametxt = new JTextField(15);
-        pwdtxt = new JPasswordField(15);
-        login = new JButton("Log-in");
-        cancel = new JButton("Cancel");             
-        loginframe = new JFrame();
-    }
-    
-    public void initComponents(int width,int height)
-    {        
-        usernamelbl.setText("Username:");
-        passwordlbl.setText("Password:");
-        Loginpanel.add(usernamelbl);
-        Loginpanel.add(usernametxt);
-        Loginpanel.add(passwordlbl);
-        Loginpanel.add(pwdtxt);
-        Loginpanel.add(login);
-        Loginpanel.add(cancel);
-        loginframe.add(Loginpanel);
-        
-        loginframe.setSize(300,100);
-        loginframe.setVisible(true);  
-        loginframe.setLocation(width/2-loginframe.getSize().width/2, height/2-loginframe.getSize().height/2);
-       
-    }
-    
-    public String validate()
-    {
-        usernametxt.setText("a");
-        pwdtxt.setText("a");
-      String id = usernametxt.getText();
-      String pwd = pwdtxt.getText();      
-      if (id.equals("a") && pwd.equals("a")) 
-          return "daya";
-      else if (id.equals("") || pwd.equals("")) 
-          return "";
-      else
-          return "---";
-    }
-    
-    
+	public LoginUI() {
+		loginpanel = new JPanel();
+		userLabel = new JLabel("User");
+		userText = new JTextField(15);
+
+		passwordLabel = new JLabel("Password");
+		passwordText = new JPasswordField(15);
+
+		loginButton = new JButton("Log-in");
+		cancelButton = new JButton("Cancel");
+		
+		loginframe= new JFrame();
+	}
+
+	public void placeComponents() {
+
+		loginframe.setSize(300, 250);
+		loginframe.setTitle("Login");
+		loginframe.setLocationRelativeTo(null);
+		loginframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		loginframe.setVisible(true);
+
+		loginpanel.setLayout(null);
+
+		userLabel.setBounds(10, 40, 80, 25);
+		loginpanel.add(userLabel);
+
+		userText.setBounds(100, 40, 160, 25);
+		loginpanel.add(userText);
+
+		passwordLabel.setBounds(10, 80, 80, 25);
+		loginpanel.add(passwordLabel);
+
+		passwordText.setBounds(100, 80, 160, 25);
+		loginpanel.add(passwordText);
+
+		loginButton.setBounds(100, 120, 70, 25);
+		loginpanel.add(loginButton);
+
+		cancelButton.setBounds(180, 120, 70, 25);
+		loginpanel.add(cancelButton);
+
+		loginframe.add(loginpanel);
+
+	}
+
+	//To be change to restService (Minnool Application)
+	public String validate() {
+		try{
+			 char[] passWord = passwordText.getPassword();
+			 String password = new String(passWord);
+			if(userText.getText().equalsIgnoreCase("admin") && password.equalsIgnoreCase("admin")){
+				return "success";
+			}
+			else{
+				return "fail";
+			}
+		}
+		catch(Exception e){
+			log.error("Unable to Process Login Funcion", e);
+		}
+		return "fail";
+	}
+
 }
