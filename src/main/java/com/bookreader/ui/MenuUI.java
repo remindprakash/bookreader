@@ -3,13 +3,13 @@ package com.bookreader.ui;
 import javax.swing.*;
 import java.awt.*;
 
-class AppMenu {
+class MenuUI {
 	JPanel menuPanel;
 	JMenuBar menubar;
 	JMenu file, library, view, help;
 	JMenuItem loginmenu, logoutmenu, exit;
 
-	AppMenu() {
+	MenuUI() {
 		menuPanel = new JPanel(new GridLayout(1, 1));
 		menubar = new JMenuBar();
 		file = new JMenu("File");

@@ -13,14 +13,14 @@ public class EBRApp extends JFrame implements ActionListener {
 	static final Logger log = LoggerFactory.getLogger(EBRApp.class);
 	
 	
-	AppMenu menu;
+	MenuUI menu;
 	LoginUI login;
 	LibraryUI lib;
 	
 
 	public EBRApp() {
 		login = new LoginUI();
-		menu = new AppMenu();
+		menu = new MenuUI();
 		lib = new LibraryUI();
 		initReader();
 	}

@@ -115,7 +115,7 @@ public class LibraryUI
        //create right panel
        //GeneralShelf_RightPane();
        
-       EpubView EpubView=new EpubView();
+       EpubUI EpubView=new EpubUI();
        InputStream bookStream = null;
        bookStream = LibraryUI.class.getResourceAsStream("/tirukkural.epub");
        

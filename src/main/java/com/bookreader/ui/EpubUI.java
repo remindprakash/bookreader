@@ -18,8 +18,8 @@ import com.bookreader.epub.viewer.BrowseBar;
 import com.bookreader.epub.viewer.ContentPane;
 import com.bookreader.epub.viewer.ToolBar;
 
-public class EpubView {
-	static final Logger log = LoggerFactory.getLogger(EpubView.class);
+public class EpubUI {
+	static final Logger log = LoggerFactory.getLogger(EpubUI.class);
 	
 	private Navigator navigator = new Navigator();
 	private BrowseBar browseBar;
