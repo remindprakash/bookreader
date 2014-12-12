@@ -34,7 +34,7 @@ public class ViewerUtil {
 	}
 
 	
-	static ImageIcon createImageIcon(String iconName) {
+	public static ImageIcon createImageIcon(String iconName) {
 		ImageIcon result = null;
 		String fullIconPath = "/viewer/icons/" + iconName + ".png";
 		try {
