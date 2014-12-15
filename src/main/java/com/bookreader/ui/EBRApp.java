@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.InputStream;
 
 public class EBRApp implements ActionListener {
 	
@@ -17,13 +18,14 @@ public class EBRApp implements ActionListener {
 	private MenuUI menu;
 	private LoginUI login;
 	private LibraryUI lib;
-	
+	private EpubUI epub;
 
 	public EBRApp() {
+		mainWindow = new JFrame();
 		login = new LoginUI();
 		menu = new MenuUI();
 		lib = new LibraryUI();
-		mainWindow = new JFrame();
+		
 		initReader();
 	}
 
@@ -33,16 +35,15 @@ public class EBRApp implements ActionListener {
 		mainWindow.setLocationRelativeTo(null);
 		mainWindow.setTitle("E-Book Reader");
 		mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainWindow.setResizable(true);
 		
 		//Menu Item 
 		menu.addAllMenu();
-		mainWindow.add(menu.menuPanel, BorderLayout.NORTH);
 		menu.loginmenu.addActionListener(this);
 		menu.logoutmenu.addActionListener(this);
 		menu.exit.addActionListener(this);
 		menu.dispFullMenu();
-		lib.contentPanel.setVisible(false);
-		
+		mainWindow.add(menu.menuPanel, BorderLayout.NORTH);
 		
 		//Login page 
 		login.placeComponents();
@@ -50,7 +51,8 @@ public class EBRApp implements ActionListener {
 		login.cancelButton.addActionListener(this);
 		
 		
-		mainWindow.setResizable(true);
+		//Library Item 
+		lib.contentPanel.setVisible(false);
 		mainWindow.add(lib.contentPanel, BorderLayout.CENTER);
 	}
 

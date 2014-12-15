@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -38,19 +39,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bookreader.epub.util.FontLoader;
+import com.bookreader.ui.EpubUI;
+import com.bookreader.ui.LibraryUI;
+import com.bookreader.ui.LoginUI;
 
 
 public class Viewer {
 	
 	static final Logger log = LoggerFactory.getLogger(Viewer.class);
-	private final JFrame mainWindow;
+	private JFrame mainWindow;
 	private BrowseBar browseBar;
 	private JSplitPane mainSplitPane; 
 	private JSplitPane leftSplitPane;
-	private JSplitPane rightSplitPane;
+	private JPanel rightSplitPane;
 	private Navigator navigator = new Navigator();
 	private NavigationHistory browserHistory;
 	private BookProcessorPipeline epubCleaner = new BookProcessorPipeline(Collections.<BookProcessor>emptyList());
+	
+	private LoginUI login;
+
+	public Viewer(){
+		
+	}
 	
 	public Viewer(InputStream bookStream) {
 		mainWindow = createMainWindow();
@@ -64,10 +74,17 @@ public class Viewer {
 		}
 	}
 
-	public Viewer(Book book) {
-		mainWindow = createMainWindow();
-		gotoBook(book);
+	public void LoginViewer(){
+		try{
+			login = new LoginUI();
+			login.placeComponents();
+		}
+		catch(Exception e){
+			log.error(e.getMessage(), e);
+		}
 	}
+	
+	
 
 	private JFrame createMainWindow() {
 		JFrame result = new JFrame();
@@ -78,25 +95,20 @@ public class Viewer {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		
 		leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		
 		leftSplitPane.setTopComponent(new TableOfContentsPane(navigator));
 		leftSplitPane.setBottomComponent(new GuidePane(navigator));
 		leftSplitPane.setOneTouchExpandable(true);
 		leftSplitPane.setContinuousLayout(true);
 		leftSplitPane.setResizeWeight(0.8);
 		
-		rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		rightSplitPane.setOneTouchExpandable(true);
-		rightSplitPane.setContinuousLayout(true);
-		rightSplitPane.setResizeWeight(1.0);
-		
+		rightSplitPane = new JPanel(new BorderLayout());
 		ContentPane htmlPane = new ContentPane(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
 		this.browseBar = new BrowseBar(navigator, htmlPane);
 		contentPanel.add(browseBar, BorderLayout.SOUTH);
-		rightSplitPane.setLeftComponent(contentPanel);
-		
-		rightSplitPane.setRightComponent(new MetadataPane(navigator));
+		rightSplitPane.add(contentPanel);
 		
 		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		mainSplitPane.setLeftComponent(leftSplitPane);
@@ -107,11 +119,12 @@ public class Viewer {
 		
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
 		mainPanel.setPreferredSize(new Dimension(1000, 750));
+		
 		mainPanel.add(new NavigationBar(navigator), BorderLayout.NORTH);
 
 		result.add(mainPanel);
 		result.pack();
-		setLayout(Layout.TocContentMeta);
+		setLayout(Layout.TocContent);
 		result.setVisible(true);
 		return result;	
 	}
@@ -173,6 +186,10 @@ public class Viewer {
 		});
 		fileMenu.add(openFileMenuItem);
 
+		
+		//Save Function
+		
+		/*
 		JMenuItem saveFileMenuItem = new JMenuItem(getText("Save as ..."));
 		saveFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK | Event.SHIFT_MASK));
 		saveFileMenuItem.addActionListener(new ActionListener() {
@@ -203,6 +220,7 @@ public class Viewer {
 			}
 		});
 		fileMenu.add(saveFileMenuItem);
+		*/
 		
 		JMenuItem reloadMenuItem = new JMenuItem(getText("Reload"));
 		reloadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
@@ -213,6 +231,19 @@ public class Viewer {
 			}
 		});
 		fileMenu.add(reloadMenuItem);
+		
+		JMenuItem logOutMenuItem = new JMenuItem(getText("LogOut"));
+		logOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, Event.CTRL_MASK));
+		logOutMenuItem.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				mainWindow.dispose();
+				LoginViewer();
+				
+			}
+		});
+		fileMenu.add(logOutMenuItem);
+		
 
 		JMenuItem exitMenuItem = new JMenuItem(getText("Exit"));
 		exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
@@ -247,15 +278,6 @@ public class Viewer {
 		});
 		viewMenu.add(viewContentMenuItem);
 
-		JMenuItem viewTocContentMetaMenuItem = new JMenuItem(getText("TocContentMeta"), ViewerUtil.createImageIcon("layout-toc-content-meta"));
-		viewTocContentMetaMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, Event.CTRL_MASK));
-		viewTocContentMetaMenuItem.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				setLayout(Layout.TocContentMeta);
-			}
-		});
-		viewMenu.add(viewTocContentMetaMenuItem);
 		
 		JMenu helpMenu = new JMenu(getText("Help"));
 		menuBar.add(helpMenu);
@@ -272,7 +294,6 @@ public class Viewer {
 	}
 
 	private enum Layout {
-		TocContentMeta,
 		TocContent,
 		Content
 	}
@@ -287,44 +308,20 @@ public class Viewer {
 		switch (layout) {
 			case Content:
 				mainSplitPane.setDividerLocation(0.0d);
-				rightSplitPane.setDividerLocation(1.0d);
 				break;
 			case TocContent:
 				mainSplitPane.setDividerLocation(0.2d);
-				rightSplitPane.setDividerLocation(1.0d);
-				break;
-			case TocContentMeta:
-				mainSplitPane.setDividerLocation(0.2d);
-				rightSplitPane.setDividerLocation(0.6d);
 				break;
 		}
 	}
-
-	private static InputStream getBookInputStream(String[] args) {
-		// jquery-fundamentals-book.epub
-//		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/test2_book1.epub"));
-//		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/three_men_in_a_boat_jerome_k_jerome.epub"));
-		
-//		String bookFile = "/home/paul/test2_book1.epub";
-//		bookFile = "/home/paul/project/private/library/epub/this_dynamic_earth-AAH813.epub";
 	
-		String bookFile = null;
-		if (args.length > 0) {
-			bookFile = args[0];
-		}
-		InputStream result = null;
-		if (! StringUtils.isBlank(bookFile)) {
-			try {
-				result = new FileInputStream(bookFile);
-			} catch (Exception e) {
-				log.error("Unable to open " + bookFile, e);
-			}
-		}
-		if (result == null) {
-			result = Viewer.class.getResourceAsStream("/tirukkural.epub");
-		}
-		return result;
+	
+	public void InitPanes() {
+		InputStream bookStream = null;
+		bookStream = Viewer.class.getResourceAsStream("/tirukkural.epub");
+		new Viewer(bookStream);
 	}
+	
 	
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
@@ -334,14 +331,10 @@ public class Viewer {
 			log.error("Unable to set native look and feel", e);
 		}
 
-		final InputStream bookStream = getBookInputStream(args);
-//		final Book book = readBook(args);
-		
-		// Schedule a job for the event dispatch thread:
-		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new Viewer(bookStream);
+			 Viewer obj=new Viewer();
+			 obj.LoginViewer();
 			}
 		});
 	}

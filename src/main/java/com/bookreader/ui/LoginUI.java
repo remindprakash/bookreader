@@ -5,7 +5,11 @@ import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bookreader.epub.viewer.Viewer;
+
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class LoginUI {
 	
@@ -61,6 +65,34 @@ public class LoginUI {
 		loginpanel.add(cancelButton);
 
 		loginframe.add(loginpanel);
+		
+		loginButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (validate().equalsIgnoreCase("success")) {
+					// Not Valid User
+					JOptionPane.showMessageDialog(loginframe,
+							"Invalid username/password", "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					// Valid User
+					loginframe.dispose();
+					//JOptionPane.showMessageDialog(this, "Welcome admin !!!");
+					Viewer obj=new Viewer();
+					obj.InitPanes();
+				}
+			}
+		});
+		
+		cancelButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				loginframe.dispose();
+			}
+		});
+		
+		
 
 	}
 

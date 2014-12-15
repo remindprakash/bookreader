@@ -9,7 +9,7 @@ class MenuUI {
 	JMenu file, library, view, help;
 	JMenuItem loginmenu, logoutmenu, exit;
 
-	MenuUI() {
+	public MenuUI() {
 		menuPanel = new JPanel(new GridLayout(1, 1));
 		menubar = new JMenuBar();
 		file = new JMenu("File");

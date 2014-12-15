@@ -111,18 +111,13 @@ public class LibraryUI
        //Read library file line-by-line & create data structures 
        //PopulateData();
        //create left panel
-       Init_LeftPane();
+        Init_LeftPane();
        //create right panel
-       //GeneralShelf_RightPane();
+        GeneralShelf_RightPane();
        
-       EpubUI EpubView=new EpubUI();
-       InputStream bookStream = null;
-       bookStream = LibraryUI.class.getResourceAsStream("/tirukkural.epub");
-       
-       rightPanel=EpubView.Viewer(bookStream);
-       
-       //add right Pane to main  
         contentPanel.add(rightPanel);
+       
+       
        //contentPanel.setRightComponent(rightPanel);
        //contentPanel.setOneTouchExpandable(true);
        //contentPanel.setDividerLocation(0.5);

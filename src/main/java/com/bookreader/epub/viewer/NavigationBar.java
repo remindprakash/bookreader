@@ -1,6 +1,7 @@
 package com.bookreader.epub.viewer;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -9,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -32,13 +34,13 @@ import nl.siegmann.epublib.domain.Book;
  * @author paul.siegmann
  *
  */
-public class NavigationBar extends JToolBar implements NavigationEventListener {
+public class NavigationBar extends JPanel implements NavigationEventListener {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1166410773448311544L;
-	private JTextField titleField;
+	
 	private JTextField searchField;
 	private final NavigationHistory navigationHistory;
 	private Navigator navigator;
@@ -49,10 +51,11 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 	
 	public NavigationBar(Navigator navigator) {
 		this.navigationHistory = new NavigationHistory(navigator);
+		setBackground(Color.BLACK);
 		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
 		addHistoryButtons();
-		titleField = (JTextField) add(new JTextField());
+		//titleField = (JTextField) add(new JTextField());
 		addSearchButtons();
 		initBook(navigator.getBook());
 	}
@@ -66,9 +69,70 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 
 	private void addHistoryButtons() {
 		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
+		
+		
+		JButton libButton = ViewerUtil.createButton("liberary", "Library");
+		libButton.setFont(historyButtonFont);
+		libButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		add(libButton);
+		
+		JButton bookButton = ViewerUtil.createButton("bookmark", "BookMark");
+		bookButton.setFont(historyButtonFont);
+		bookButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		add(bookButton);
+		
+		
+		JButton showButton = ViewerUtil.createButton("", "Show/Hide");
+		showButton.setFont(historyButtonFont);
+		showButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		add(showButton);
+		
+		
+		JButton zoomInButton = ViewerUtil.createButton("", "+");
+		zoomInButton.setFont(historyButtonFont);
+		zoomInButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		add(zoomInButton);
+		
+		JButton zoomOutButton = ViewerUtil.createButton("", "-");
+		zoomOutButton.setFont(historyButtonFont);
+		zoomOutButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		add(zoomOutButton);
+		
+		
+		
+		/*
 		JButton previousButton = ViewerUtil.createButton("history-previous", "<=");
 		previousButton.setFont(historyButtonFont);
-//		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
 			
 		previousButton.addActionListener(new ActionListener() {
 			
@@ -90,6 +154,8 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 			}
 		});
 		add(nextButton);
+		*/
+		
 	}
 
 	private void doSearch(int move) {
@@ -166,6 +232,18 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 		});
 		searchForm.add(nextButton, BorderLayout.EAST);
 		add(searchForm);
+		
+		
+		JButton fullScreenButton = ViewerUtil.createButton("fullscreen", "|||");
+		fullScreenButton.setFont(historyButtonFont);
+		fullScreenButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		add(fullScreenButton);
 	}
 
 	@Override
@@ -175,8 +253,8 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 		}
 		if (navigationEvent.getCurrentResource() != null) {
 			String title = ToolsResourceUtil.getTitle(navigationEvent.getCurrentResource());
-			titleField.setText(title);
-			titleField.setFont(FontLoader.getFontCache().get("0"));
+			/*titleField.setText(title);
+			titleField.setFont(FontLoader.getFontCache().get("0"));*/
 		}
 	}
 }
