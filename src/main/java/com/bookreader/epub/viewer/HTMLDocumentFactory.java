@@ -3,6 +3,7 @@ package com.bookreader.epub.viewer;
 import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -29,6 +30,8 @@ import nl.siegmann.epublib.service.MediatypeService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.bookreader.epub.util.ResourceLoader;
 
 /**
  * Creates swing HTML documents from resources.
@@ -114,6 +117,21 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 			imageLoaderCache.initImageLoader(document);
 		}
 		
+		//document.getStyleSheet().importStyleSheet(Viewer.class.getResource("/template.css"));
+		/*
+		// initialize the CSSLoader for the specific document
+		if (document != null) {
+			try {
+				System.out.println(IOUtils.toString(ResourceLoader.getCSSCache().get("0"), "UTF-8"));
+				document.getStyleSheet().addRule(IOUtils.toString(ResourceLoader.getCSSCache().get("0"), "UTF-8"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		}
+		*/
 
 		return document;
 	}

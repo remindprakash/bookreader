@@ -15,7 +15,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bookreader.epub.util.FontLoader;
+import com.bookreader.epub.util.ResourceLoader;
 import com.bookreader.epub.viewer.BrowseBar;
 import com.bookreader.epub.viewer.ContentPane;
 import com.bookreader.epub.viewer.GuidePane;
@@ -58,7 +58,7 @@ public class EpubUI {
 		Book book;
 		try {
 			book = (new EpubReader()).readEpub(bookStream);
-			FontLoader.loadFontFromBook(book);
+			ResourceLoader.loadResourceFromBook(book);
 			navigator.gotoBook(book, this);
 
 			tableOfContent(navigator);

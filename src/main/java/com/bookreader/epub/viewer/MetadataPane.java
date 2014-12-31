@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bookreader.epub.util.FontLoader;
+import com.bookreader.epub.util.ResourceLoader;
 
 public class MetadataPane extends JPanel implements NavigationEventListener {
 
@@ -50,7 +50,7 @@ public class MetadataPane extends JPanel implements NavigationEventListener {
 		JTable table = new JTable(
 				createTableData(book.getMetadata()),
 				new String[] {"", ""});
-		table.setFont(FontLoader.getFontCache().get("0"));
+		/*table.setFont(FontLoader.getFontCache().get("0"));*/
 		table.setEnabled(false);
 		table.setFillsViewportHeight(true);
 		JPanel contentPanel = new JPanel(new BorderLayout(0, 10));

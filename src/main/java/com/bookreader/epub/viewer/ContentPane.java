@@ -1,28 +1,65 @@
 package com.bookreader.epub.viewer;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.Scrollable;
+import javax.swing.SizeRequirements;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.ParagraphView;
+import javax.swing.text.Position;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.InlineView;
+import javax.swing.text.ViewFactory; 
+import javax.swing.text.View; 
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.browsersupport.NavigationEvent;
@@ -31,19 +68,24 @@ import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bookreader.app.mulipage.EditorPanePrinter;
 import com.bookreader.epub.util.DesktopUtil;
-import com.bookreader.epub.util.FontLoader;
+import com.bookreader.epub.util.ResizableHTMLEditorKit;
+import com.bookreader.epub.util.ResourceLoader;
+
+
 
 /**
  * Displays a page
  * 
  */
 public class ContentPane extends JPanel implements NavigationEventListener,
-		HyperlinkListener {
+		HyperlinkListener, Pageable {
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
@@ -51,13 +93,29 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			.getLogger(ContentPane.class);
 	private Navigator navigator;
 	private Resource currentResource;
-	private JEditorPane editorPane;
-	private JScrollPane scrollPane;
+	public JEditorPane editorPane;
+	public JScrollPane scrollPane;
 	private HTMLDocumentFactory htmlDocumentFactory;
+	
+	
+	CardLayout cardLayout = new CardLayout();
+	ArrayList<PagePanel> pages;
+	PageFormat pageFormat;
+	JEditorPane sourcePane;
+	Paper paper;
+	Insets margins;
+	int pageWidth;
+    int pageHeight;
+    View rootView;
+    public static int PAGE_SHIFT=20;
 	
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		this.scrollPane = (JScrollPane) add(new JScrollPane());
+		
+		this.scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		//this.scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		
 		this.scrollPane.addKeyListener(new KeyListener() {
 			
 			@Override
@@ -123,11 +181,19 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		navigator.addNavigationEventListener(this);
 		this.editorPane = createJEditorPane();
 		
+		scrollPane.setAutoscrolls(true);
+		
+		
 		scrollPane.getViewport().add(editorPane);
+		
 		this.htmlDocumentFactory = new HTMLDocumentFactory(navigator, editorPane.getEditorKit());
 		initBook(navigator.getBook());
+		
 	}
 
+	
+	
+	
 	private void initBook(Book book) {
 		if (book == null) {
 			return;
@@ -202,18 +268,40 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	}
 
 	private JEditorPane createJEditorPane() {
-		JEditorPane editorPane = new JEditorPane();
+		JEditorPane editorPane = new JEditorPane(){
+			 private double SCALE = 1.2;  
+			     
+		        @Override  
+		        public void paint( Graphics g )  
+		        {  
+		            Graphics2D g2d = (Graphics2D)g;  
+		            g2d.scale( SCALE, SCALE );  
+		            super.paint( g2d );  
+		        }  
+		  
+		        @Override  
+		        protected void paintComponent( Graphics g )  
+		        {  
+		            Graphics2D g2d = (Graphics2D)g;  
+		            g2d.scale( SCALE, SCALE );  
+		            super.paintComponent( g2d );  
+		        }  
+		};
+		
 		editorPane.setBackground(Color.white);
 		editorPane.setEditable(false);
-		HTMLEditorKit htmlKit = new HTMLEditorKit();
-		// StyleSheet myStyleSheet = new StyleSheet();
-		// String normalTextStyle = "font-size: 12px, font-family: georgia";
-		// myStyleSheet.addRule("body {" + normalTextStyle + "}");
-		// myStyleSheet.addRule("p {" + normalTextStyle + "}");
-		// myStyleSheet.addRule("div {" + normalTextStyle + "}");
-		// htmlKit.setStyleSheet(myStyleSheet);
-		editorPane.setEditorKit(htmlKit);
+		
+		//editorPane.setEditorKit( new HTMLEditorKit());
+		editorPane.setEditorKit( new ResizableHTMLEditorKit());
+		
+		
+		
 		editorPane.addHyperlinkListener(this);
+		
+		
+		
+		
+		
 		editorPane.addKeyListener(new KeyListener() {
 
 			@Override
@@ -232,16 +320,19 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 					navigator.gotoNextSpineSection(ContentPane.this);
 				} else if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT) {
 					navigator.gotoPreviousSpineSection(ContentPane.this);
-//				} else if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
-//					ContentPane.this.gotoPreviousPage();
-				} else if (keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
-//					|| (keyEvent.getKeyCode() == KeyEvent.VK_DOWN)) {
+				} else if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
+				ContentPane.this.gotoPreviousPage();
+				} else if (keyEvent.getKeyCode() == KeyEvent.VK_SPACE
+					|| (keyEvent.getKeyCode() == KeyEvent.VK_DOWN)) {
 					ContentPane.this.gotoNextPage();
 				}
 			}
 		});
+		
+		
 		return editorPane;
 	}
+	
 
 	public void displayPage(Resource resource) {
 		displayPage(resource, 0);
@@ -255,19 +346,70 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			
 			HTMLDocument document = htmlDocumentFactory.getDocument(resource);
 			
-			//document.getDocumentProperties().put("java.awt.font.TextAttribute", TableOfContentsPane.loadFont("C:/Users/admin/Desktop/tirukkural/OEBPS/Fonts/Akshar.ttf"));
-			
 			if (document == null) {
 				return;
 			}
 			currentResource = resource;
-			editorPane.setDocument(document);
 			
-			Font font=FontLoader.getFontCache().get("0");
-			String bodyRule = "body { font-family: " + font.getFamily() + "; " + 	                "font-size: " + font.getSize() + "pt; }";
-			((HTMLDocument)editorPane.getDocument()).getStyleSheet().addRule(bodyRule);
-
+			
+			
+			/*StringWriter writer = new StringWriter();
+			editorPane.getEditorKit().write(writer, document, 0, document.getLength());
+			String s = writer.toString();
+			
+			editorPane.setText(s);*/
+			
+		
+			if(ResourceLoader.getCSSCache().size()!=0 || !ResourceLoader.getCSSCache().isEmpty()){
+				((HTMLDocument)editorPane.getDocument()).getStyleSheet().addRule(IOUtils.toString(ResourceLoader.getCSSCache().get("0"), "UTF-8"));
+				
+				//((HTMLDocument)editorPane.getDocument()).getStyleSheet().importStyleSheet(Viewer.class.getResource("/template.css"));
+				
+			}
+			
+			
+			editorPane.setDocument(document);
+				
+			
+				
+			/*System.out.println("Current Font"+editorPane.getFont().getSize());
+			
+			Font f=editorPane.getFont();
+			
+			// create a new, smaller font from the current font
+			 Font f2 = new Font(f.getFontName(), f.getStyle(), 60);
+			 
+			 // set the new font in the editing area
+			 editorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+			 editorPane.setFont(f2);
+			 
+			 System.out.println("New Font"+editorPane.getFont().getSize());*/
+			
+			
+			
+			
+			if(ResourceLoader.getFontCache().size()!=0 || !ResourceLoader.getFontCache().isEmpty()){
+				Font font=ResourceLoader.getFontCache().get("0");
+				
+				editorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+				editorPane.setFont(font);
+			}
+			
+			
+			
+			Paper p=new Paper(); //by default LETTER
+	        p.setImageableArea(0,0,p.getWidth(), p.getHeight());
+	        
+			
+	       initData(editorPane,p,new Insets(18,18,18,18));
+			
 			scrollToCurrentPosition(sectionPos);
+			
+			
+			
+			
+			
+			
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
 					+ resource.getHref() + ") :" + e.getMessage(), e);
@@ -328,9 +470,13 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		newY = Math.max(0, newY - viewportHeight);
 		scrollPane.getViewport().setViewPosition(
 				new Point((int) viewPosition.getX(), newY));
+		
+		((CardLayout) this.getLayout()).previous(this);
 	}
 
 	public void gotoNextPage() {
+		
+		
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		int viewportHeight = scrollPane.getViewport().getHeight();
 		int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
@@ -341,6 +487,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		int newY = ((int) viewPosition.getY()) + viewportHeight;
 		scrollPane.getViewport().setViewPosition(
 				new Point((int) viewPosition.getX(), newY));
+		
+		((CardLayout) this.getLayout()).next(this);
 	}
 
 	
@@ -393,6 +541,278 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			}
 		}
 	}
+	
+	
+	
+	//Pageable
+	
+	
+	
+	
 
+	public void initData(JEditorPane pane, Paper paper, Insets margins){
+		
+		
+		
+		
+		
+		paper.setSize(getSize().width-40, getSize().height-40);
+		
+		this.sourcePane=pane;
+		
+        this.paper=paper;
+        this.margins=margins;
+        this.pageWidth=(int)paper.getWidth();
+        
+        
+        this.pageHeight=(int)paper.getHeight();
+        pageFormat=new PageFormat();
+        paper.setImageableArea(0,0,paper.getWidth(), paper.getHeight());
+        pageFormat.setPaper(paper);
+
+        doPagesLayout();
+	}
+	
+	public void doPagesLayout() {
+    	try{
+    		setLayout(null);
+            removeAll();
+            setLayout(cardLayout);
+           
+            this.rootView=sourcePane.getUI().getRootView(sourcePane);
+            
+            sourcePane.setSize( this.pageWidth-margins.top-margins.bottom,Integer.MAX_VALUE);
+            Dimension d=sourcePane.getPreferredSize();
+            sourcePane.setSize( this.pageWidth-margins.top-margins.bottom, d.height);
+
+            calculatePageInfo();
+           
+            setBorder(BorderFactory.createLineBorder(Color.RED));
+            sourcePane.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+            
+            
+            
+            
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+        
+    }
+	
+	protected void calculatePageInfo() {
+        pages =new ArrayList<PagePanel>();
+        int startY=0;
+        int endPageY=getEndPageY(startY);
+        while (startY+pageHeight-margins.top-margins.bottom<sourcePane.getHeight()) {
+            Shape pageShape=getPageShape(startY, pageWidth-margins.left-margins.right,pageHeight-margins.top-margins.bottom, sourcePane);
+            pages.add(new PagePanel(startY,endPageY, pageShape));
+            startY=endPageY;
+            endPageY=getEndPageY(startY);
+        }
+        Shape pageShape=getPageShape(startY, pageWidth-margins.left-margins.right,pageHeight-margins.top-margins.bottom, sourcePane);
+        pages.add(new PagePanel(startY,endPageY, pageShape));
+
+        int count=0;
+        for (PagePanel pi: pages) {
+            add(pi);
+            pi.setLocation(PAGE_SHIFT, PAGE_SHIFT+count*(pageHeight+PAGE_SHIFT));
+            count++;
+        }
+    }
+	
+	
+	protected int getEndPageY(int startY) {
+        int desiredY=startY+pageHeight-margins.top-margins.bottom;
+        int realY=desiredY;
+        for (int x=1; x<pageWidth; x++) {
+            View v=getLeafViewAtPoint(new Point(x,realY), rootView);
+            if (v!=null) {
+                Rectangle alloc=getAllocation(v, sourcePane).getBounds();
+                if (alloc.height>pageHeight-margins.top-margins.bottom) {
+                    continue;
+                }
+                if (alloc.y+alloc.height>desiredY) {
+                    realY=Math.min(realY, alloc.y);
+                }
+            }
+        }
+        
+        return realY;
+    }
+	
+	protected static Shape getAllocation(View v, JEditorPane edit) {
+        Insets ins=edit.getInsets();
+        View root=edit.getUI().getRootView(edit);
+        View vParent=v.getParent();
+        int x=ins.left;
+        int y=ins.top;
+        while(vParent!=null) {
+            int i=vParent.getViewIndex(v.getStartOffset(), Position.Bias.Forward);
+            Shape alloc=vParent.getChildAllocation(i, new Rectangle(0,0, Short.MAX_VALUE, Short.MAX_VALUE));
+            x+=alloc.getBounds().x;
+            y+=alloc.getBounds().y;
+
+            vParent=vParent.getParent();
+        }
+
+        return new Rectangle(x,y, (int)v.getPreferredSpan(View.X_AXIS), (int)v.getPreferredSpan(View.Y_AXIS));
+    }
+	
+	
+	public static Shape getPageShape(int pageStartY, int pageWidth, int pageHeight, JEditorPane sourcePane) {
+        Area result=new Area(new Rectangle(0, 0, pageWidth, pageHeight));
+        View rootView=sourcePane.getUI().getRootView(sourcePane);
+        Rectangle last=new Rectangle();
+        for (int x=1; x<pageWidth; x++) {
+            View v=getLeafViewAtPoint(new Point(x,pageStartY), rootView, sourcePane);
+            if (v!=null) {
+                Rectangle alloc=getAllocation(v, sourcePane).getBounds();
+                if (alloc.y<pageStartY && alloc.y+alloc.height>pageStartY) {
+                    if (!alloc.equals(last)) {
+                        Rectangle r=new Rectangle(alloc);
+                        r.y-=pageStartY;
+                        result.subtract(new Area(r));
+                    }
+                }
+                last=alloc;
+            }
+        }
+
+        last=new Rectangle();
+        for (int x=1; x<pageWidth; x++) {
+            View v=getLeafViewAtPoint(new Point(x,pageStartY+pageHeight), rootView, sourcePane);
+            if (v!=null) {
+                Rectangle alloc=getAllocation(v, sourcePane).getBounds();
+                if (alloc.y<pageStartY+pageHeight && alloc.y+alloc.height>pageStartY+pageHeight) {
+                    if (!alloc.equals(last)) {
+                        Rectangle r=new Rectangle(alloc);
+                        r.y-=pageStartY;
+                        result.subtract(new Area(r));
+                    }
+                }
+                last=alloc;
+            }
+        }
+
+        return result;
+    }
+	
+	
+	protected View getLeafViewAtPoint(Point p, View root) {
+        return getLeafViewAtPoint(p, root, sourcePane);
+    }
+    
+    public static View getLeafViewAtPoint(Point p, View root, JEditorPane sourcePane) {
+        int pos=sourcePane.viewToModel(p);
+        View v=sourcePane.getUI().getRootView(sourcePane);
+        while (v.getViewCount()>0) {
+            int i=v.getViewIndex(pos, Position.Bias.Forward);
+            v=v.getView(i);
+        }
+        Shape alloc=getAllocation(root, sourcePane);
+        if (alloc.contains(p)) {
+            return v;
+        }
+
+        return null;
+    }
+    
+    
+    class PagePanel extends JPanel {
+        int pageStartY;
+        int pageEndY;
+        Shape pageShape;
+        boolean isPrinting=false;
+        JPanel innerPage=new JPanel() {
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                
+                Graphics2D g2d = (Graphics2D) g;
+                
+                AffineTransform old=g2d.getTransform();
+                
+               
+                
+                Shape oldClip=g2d.getClip();
+
+                Area newClip=new Area(oldClip);
+                if (isPrinting) {
+                    newClip=new Area(pageShape);
+                }
+                else {
+                    newClip.intersect(new Area(pageShape));
+                }
+                g2d.setClip(newClip);
+
+                g2d.translate(0, -pageStartY);
+
+                sourcePane.paint(g2d);
+                for (Component c:sourcePane.getComponents() ) {
+                    AffineTransform tmp=g2d.getTransform();
+                    g2d.translate(c.getX(), c.getY());
+                    ((Container)c).getComponent(0).paint(g2d);
+                    g2d.setTransform(tmp);
+                }
+
+                g2d.setTransform(old);
+                g2d.setClip(oldClip); 
+            }
+            
+        };
+
+        public PagePanel() {
+            this (0, 0, null);
+        }
+        
+        public PagePanel(int pageStartY, int pageEndY, Shape pageShape) {
+            this.pageStartY=pageStartY;
+            this.pageEndY=pageEndY;
+            this.pageShape=pageShape;
+
+            setSize(pageWidth, pageHeight);
+            
+            
+            setLayout(null);
+            add(innerPage);
+            innerPage.setBounds(margins.left,  margins.top, pageWidth-margins.left-margins.right, pageHeight-margins.top-margins.bottom);
+            
+            
+        }
+        
+       
+        /*public void paintComponent(Graphics g){  
+            Graphics2D g2=(Graphics2D)g;  
+            g2.scale(1.5,1.5);  
+
+        } */
+       
+    }
+    
+    
+	//pageable methods
+	
+	@Override
+	public int getNumberOfPages() {
+		return pages.size();
+	}
+
+
+
+	@Override
+	public PageFormat getPageFormat(int pageIndex)
+			throws IndexOutOfBoundsException {
+		 return pageFormat;
+	}
+
+
+
+	@Override
+	public Printable getPrintable(int pageIndex)
+			throws IndexOutOfBoundsException {
+		 return (Printable) this;
+	}
+	
+	
 
 }

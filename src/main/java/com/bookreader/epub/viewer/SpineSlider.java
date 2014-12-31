@@ -8,6 +8,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
@@ -26,13 +27,15 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 		 */
 		private static final long serialVersionUID = 8436441824668551056L;
 		private final Navigator navigator;
-
+		
+		JTextField posNumber;
+		
 		public SpineSlider(Navigator navigator) {
 			super(JSlider.HORIZONTAL);
 			this.navigator = navigator;
 			navigator.addNavigationEventListener(this);
 			setPaintLabels(false);
-			
+			posNumber=new JTextField(10);
 			setPreferredSize(new Dimension(0, 50));
 			
 			addChangeListener(new ChangeListener() {
@@ -52,14 +55,14 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 			super.setMinimum(0);
 			super.setMaximum(book.getSpine().size() - 1);
 			super.setValue(0);
-//			setPaintTicks(true);
+			setPaintTicks(true);
 			updateToolTip();
 		}
 
 		private void updateToolTip() {
 			String tooltip = "";
 			if (navigator.getCurrentSpinePos() >= 0 && navigator.getBook() != null) {
-				tooltip = String.valueOf(navigator.getCurrentSpinePos() + 1) + " / " + navigator.getBook().getSpine().size();
+				tooltip = String.valueOf(navigator.getCurrentSpinePos() + 1) + " / " + navigator.getBook().getSpine().size();		
 			}
 			setToolTipText(tooltip);
 			
@@ -68,6 +71,7 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 			labelTable.put( new Integer( 5 ), new JLabel(tooltip) );
 			
 			setLabelTable( labelTable );
+		
 			setPaintLabels(true);
 			
 		}

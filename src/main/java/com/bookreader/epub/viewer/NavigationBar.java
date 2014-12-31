@@ -18,7 +18,7 @@ import javax.swing.JToolBar;
 import com.bookreader.epub.search.SearchIndex;
 import com.bookreader.epub.search.SearchResult;
 import com.bookreader.epub.search.SearchResults;
-import com.bookreader.epub.util.FontLoader;
+import com.bookreader.epub.util.ResourceLoader;
 import com.bookreader.epub.util.ToolsResourceUtil;
 
 import nl.siegmann.epublib.browsersupport.NavigationEvent;

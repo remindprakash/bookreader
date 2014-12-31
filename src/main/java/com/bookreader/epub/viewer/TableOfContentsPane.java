@@ -38,7 +38,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.bookreader.epub.util.FontLoader;
+import com.bookreader.epub.util.ResourceLoader;
 
 /**
  * Creates a JTree for navigating a Book via its Table of Contents.
@@ -250,9 +250,7 @@ public class TableOfContentsPane extends JPanel implements
 		// tree.setRootVisible(false);
 		tree.setSelectionRow(0);
 		this.scrollPane.getViewport().removeAll();
-
-		this.tree.setFont(FontLoader.getFontCache().get("0"));
-
+		this.tree.setFont(ResourceLoader.getFontCache().get("0"));
 		this.scrollPane.getViewport().add(tree);
 
 	}
