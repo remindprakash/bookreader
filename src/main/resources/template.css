@@ -1,0 +1,366 @@
+tbody, thead, tfoot, tr, td, th {
+	border-style : inherit;
+	border-width : inherit;
+	border-color : inherit;
+}
+a {
+	color : #03F;
+	text-decoration: none;
+}
+.leftFloat {
+	float : left;
+}
+.rightFloat {
+	float : right;
+}
+ul.List-1 {
+	margin-left : 26px;
+}
+
+
+span.bodyBold {
+	font-weight : bold;
+	font-style : normal;
+}
+span.char-style-override-1 {
+	font-style : italic;
+	font-weight : bold;
+}
+p.AppName {
+	font-family : "Myriad Pro Light", sans-serif;
+	font-weight : 600;
+	font-style : normal;
+	font-size : 2em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.11;
+	text-align : center;
+	color : #000000;
+	text-indent : 0px;
+	margin : 0px 0px 12px 0px;
+}
+p.subtitle1 {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : bold;
+	font-style : normal;
+	font-size : 1.08em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	text-indent : 0px;
+	margin : 24px 0px 10px 0px;
+}
+p.bodyText {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	text-indent : 0px;
+	margin : 2px 0px 12px 0px;
+}
+/* added by yyi */
+p.bodyText-yyi {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	background-color : #FF0;
+	text-indent : 0px;
+	margin : 2px 0px 12px 0px;
+}
+p.ximage {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 1em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : center;
+	color : #000000;
+	text-indent : 0px;
+	margin : 0px;
+}
+p.pagebreak {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	text-indent : 0px;
+	margin : 10px 0px 12px 0px;
+}
+li.list {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	margin-right : 0px;
+	margin-top : 6px;
+	margin-bottom : 6px;
+}
+/* added by yyi */
+li.list-yyi {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	background-color : #FF0;
+	margin-right : 0px;
+	margin-top : 6px;
+	margin-bottom : 6px;
+}
+
+li.list2 {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	margin-right : 0px;
+	margin-top : 6px;
+	margin-bottom : 18px;
+}
+/* added by yyi */
+li.list2-yyi {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	background-color : #FF0;
+	margin-right : 0px;
+	margin-top : 6px;
+	margin-bottom : 18px;
+}
+/* added by yyi */
+li.list2-yyi-linethrough {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	background-color : #FF0;
+	text-decoration : line-through;
+	margin-right : 0px;
+	margin-top : 6px;
+	margin-bottom : 18px;
+}
+p.subtitle2 {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : bold;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	text-indent : 0px;
+	margin : 18px 0px 0px 0px;
+}
+/* added by yyi */
+p.subtitle2-yyi {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : bold;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	background-color : #FF0;
+	text-indent : 0px;
+	margin : 18px 0px 0px 0px;
+}
+p.captionBold {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.67em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.13;
+	text-align : center;
+	color : #666666;
+	text-indent : 0px;
+	margin : 0px 24px 4px 24px;
+}
+p.bodyTextTopPadding {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	text-indent : 0px;
+	margin : 36px 0px 12px 0px;
+}
+p.gettingStarted {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : normal;
+	font-size : 1.67em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.05;
+	text-align : center;
+	color : #000000;
+	text-indent : 0px;
+	margin : 0px 0px 4px 0px;
+}
+p.TextTOC {
+	font-family : "Myriad Pro Light", sans-serif;
+	font-weight : 600;
+	font-style : normal;
+	font-size : 1.08em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #000000;
+	text-indent : 0px;
+	margin : 15px 0px 4px 24px;
+}
+p.ListItalic {
+	font-family : "Myriad Pro", sans-serif;
+	font-weight : normal;
+	font-style : italic;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : 1.2;
+	text-align : left;
+	color : #666666;
+	text-indent : 0px;
+	margin : 0px 0px 20px 26px;
+}
+p.TextTOCsubtitle {
+	font-family : "Myriad Pro Light", sans-serif;
+	font-weight : 300;
+	font-style : normal;
+	font-size : 0.92em;
+	text-decoration : none;
+	font-variant : normal;
+	line-height : .92;
+	text-align : left;
+	color : #000000;
+	margin-right : 0px;
+	margin-top : 5px;
+	margin-bottom : 8px;
+	margin-left: 50px;
+}
+p.para-style-override-1 {
+	text-align : center;
+	margin-top : 0em;
+	margin-bottom : 0em;
+}
+div.Basic-Text-Frame {
+}
+
+
+.tableformat {
+	font-family : "Myriad Pro", sans-serif;
+	font-size: 0.90em;
+	line-height : 1.1;
+	font-weight: normal;
+	width: 100%;
+	border-width: 1px;
+	border-color: #999;
+	border-collapse: collapse;
+}
+
+table .tableformat {
+	color:#333333;
+}
+th
+{
+	/* [disabled]background-color: #4B4B4B; */
+}
+
+td
+{
+	background-color: #FFFFFF;
+}
+
+th, td
+{
+	border-width: 1px;
+	padding: 5px;
+	border-style: solid;
+	border-color: #666;
+	padding-top: 7px;
+	color: #4D4D4D;
+}
+
+
+.tableformat .headerBlock th {
+	font-family : "Myriad Pro", sans-serif;
+}
+
+.tableformat .ts {
+	font-family : "Myriad Pro", sans-serif;
+	text-align: left;
+	color: #FFF;
+	background-color: #A6A6A6;
+}
+
+.tableformat .tl {
+	font-family : "Myriad Pro", sans-serif;
+	color: #FFF;
+	background-color: #666;
+}
+
+.tableformat .sh {
+	font-family : "Myriad Pro", sans-serif;
+	background-color: #DFDFDF;
+	color: #666;
+}
+
+img{
+	max-width:100%;
+	max-width:100%;
+	clear:both;
+	}
