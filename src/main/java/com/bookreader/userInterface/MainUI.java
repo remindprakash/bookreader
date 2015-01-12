@@ -2,7 +2,7 @@ package com.bookreader.userInterface;
 
 import javax.swing.*;
 
-import com.bookreader.ui.EBRApp;
+import com.bookreader.app.presentation.EBRApp;
 
 import java.awt.*;
 import java.awt.event.*;
