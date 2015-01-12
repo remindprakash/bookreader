@@ -46,7 +46,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.bookreader.app.config.AppConfig;
 import com.bookreader.app.epub.util.ResourceLoader;
-import com.bookreader.app.presentation.EpubUI;
 import com.bookreader.app.presentation.LibraryUI;
 import com.bookreader.app.presentation.LoginUI;
 
