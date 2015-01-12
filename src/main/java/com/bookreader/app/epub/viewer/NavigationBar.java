@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.bookreader.app.epub.search.SearchIndex;
 import com.bookreader.app.epub.search.SearchResult;
 import com.bookreader.app.epub.search.SearchResults;
@@ -49,7 +51,9 @@ public class NavigationBar extends JPanel implements NavigationEventListener {
 	private int searchResultIndex = -1;
 	private SearchResults searchResults;
 	
-	public NavigationBar(Navigator navigator) {
+	private ContentPane contentPane;
+	
+	public NavigationBar(Navigator navigator,ContentPane contentPane) {
 		this.navigationHistory = new NavigationHistory(navigator);
 		setBackground(Color.BLACK);
 		this.navigator = navigator;
@@ -58,6 +62,7 @@ public class NavigationBar extends JPanel implements NavigationEventListener {
 		//titleField = (JTextField) add(new JTextField());
 		addSearchButtons();
 		initBook(navigator.getBook());
+		this.contentPane=contentPane;
 	}
 
 	private void initBook(Book book) {
@@ -112,7 +117,7 @@ public class NavigationBar extends JPanel implements NavigationEventListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				contentPane.setZoomIn();
 			}
 		});
 		add(zoomInButton);
@@ -123,7 +128,7 @@ public class NavigationBar extends JPanel implements NavigationEventListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				contentPane.setZoomOut();
 			}
 		});
 		add(zoomOutButton);

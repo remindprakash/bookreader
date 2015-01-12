@@ -4,12 +4,14 @@ import javax.swing.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.bookreader.app.epub.viewer.Viewer;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 
 public class LoginUI {
 	

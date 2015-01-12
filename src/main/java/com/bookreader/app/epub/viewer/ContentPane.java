@@ -1,6 +1,5 @@
 package com.bookreader.app.epub.viewer;
 
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -14,11 +13,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelEvent;
@@ -29,42 +23,23 @@ import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Paper;
 import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.Scrollable;
-import javax.swing.SizeRequirements;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.GlyphView;
-import javax.swing.text.ParagraphView;
 import javax.swing.text.Position;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.InlineView;
-import javax.swing.text.ViewFactory; 
 import javax.swing.text.View; 
 
 import nl.siegmann.epublib.Constants;
@@ -78,13 +53,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.bookreader.app.epub.util.DesktopUtil;
 import com.bookreader.app.epub.util.ResizableHTMLEditorKit;
 import com.bookreader.app.epub.util.ResourceLoader;
-import com.bookreader.app.epub.util.TextWrapHTMLEditorKit;
-import com.bookreader.app.mulipage.EditorPanePrinter;
-import com.bookreader.app.zoom.ScaledTextPane;
 
 
 
@@ -93,6 +64,8 @@ import com.bookreader.app.zoom.ScaledTextPane;
  * Displays a page
  * 
  */
+
+
 public class ContentPane extends JPanel implements NavigationEventListener,
 		HyperlinkListener, Pageable {
 
@@ -119,6 +92,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	
     private static Double zoom=1.0;
     
+   
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		
@@ -207,7 +181,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		
 		
 		
-		JButton zoomInButton = ViewerUtil.createButton("", "+");
+		/*JButton zoomInButton = ViewerUtil.createButton("", "+");
 		
 		zoomInButton.addActionListener(new ActionListener() {
 			
@@ -234,7 +208,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			}
 		});
 		
-		add(zoomOutButton, BorderLayout.SOUTH);
+		add(zoomOutButton, BorderLayout.SOUTH);*/
 		
 		
 		
@@ -242,6 +216,19 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	}
 
 	
+	
+	public void setZoomIn(){
+		zoom=zoom+0.5;
+		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
+		System.out.println(zoom);
+	}
+	
+	
+	public void setZoomOut(){
+		zoom=zoom-0.5;
+		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
+		System.out.println(zoom);
+	}
 	
 	
 	private void initBook(Book book) {
@@ -438,11 +425,6 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			
 			scrollToCurrentPosition(sectionPos);
 			
-			editorPane.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-			
-			scrollPane.setBorder(BorderFactory.createLineBorder(Color.RED));
-			
-			
 			
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
@@ -450,11 +432,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		}
 	}
 	
-	public void SetZoomIn(){
-		System.out.println("bharath");
-		this.editorPane.getDocument().putProperty("i18n", Boolean.FALSE);
-		this.editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(1.2));
-	}
+	
 	
 
 	private void scrollToCurrentPosition(int sectionPos) {
@@ -472,6 +450,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		}
 	}
 
+	@Override
 	public void hyperlinkUpdate(HyperlinkEvent event) {
 		if (event.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
 			return;
@@ -567,6 +546,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	}
 
 	
+	@Override
 	public void navigationPerformed(NavigationEvent navigationEvent) {
 		if (navigationEvent.isBookChanged()) {
 			initBook(navigationEvent.getCurrentBook());
@@ -767,7 +747,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
         Shape pageShape;
         boolean isPrinting=false;
         JPanel innerPage=new JPanel() {
-            public void paintComponent(Graphics g) {
+            @Override
+			public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 
                 Graphics2D g2d = (Graphics2D) g;
@@ -821,7 +802,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
         }
         
        
-        public void paintComponent(Graphics g) {
+        @Override
+		public void paintComponent(Graphics g) {
             super.paintComponent(g);
 
             g.setColor(Color.black);
