@@ -56,6 +56,16 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 	private Lock cacheWriteLock = cacheLock.writeLock();
 	private Map<String, HTMLDocument> documentCache = new HashMap<String, HTMLDocument>();
 	private MyHtmlEditorKit editorKit;
+	
+	
+	
+	public Map<String, HTMLDocument> getDocumentCache() {
+		return documentCache;
+	}
+
+	public void setDocumentCache(Map<String, HTMLDocument> documentCache) {
+		this.documentCache = documentCache;
+	}
 
 	public HTMLDocumentFactory(Navigator navigator, EditorKit editorKit) {
 		this.editorKit = new MyHtmlEditorKit((HTMLEditorKit) editorKit);

@@ -20,8 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -46,7 +49,7 @@ import com.bookreader.app.epub.util.ResourceLoader;
  * @author paul
  * 
  */
-public class TableOfContentsPane extends JPanel implements
+public class TableOfContentsPane extends JPanel  implements
 		NavigationEventListener {
 
 	private static final long serialVersionUID = 2277717264176049700L;
@@ -79,8 +82,10 @@ public class TableOfContentsPane extends JPanel implements
 		add(scrollPane, BorderLayout.SOUTH);
 
 		initBook(navigator.getBook());
+		
 	}
 
+	
 	public void initTopPane() {
 
 		GridLayout layout = new GridLayout(0, 3);
@@ -128,6 +133,8 @@ public class TableOfContentsPane extends JPanel implements
 		topPane.add(itemButton);
 
 	}
+	
+	
 
 	/**
 	 * Wrapper around a TOCReference that gives the TOCReference's title when
@@ -247,7 +254,7 @@ public class TableOfContentsPane extends JPanel implements
 
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		// tree.setRootVisible(false);
+		//tree.setRootVisible(false);
 		tree.setSelectionRow(0);
 		this.scrollPane.getViewport().removeAll();
 		this.tree.setFont(ResourceLoader.getFontCache().get("0"));

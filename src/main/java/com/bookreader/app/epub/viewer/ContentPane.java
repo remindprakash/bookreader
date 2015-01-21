@@ -27,6 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
@@ -53,9 +55,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.bookreader.app.epub.util.DesktopUtil;
 import com.bookreader.app.epub.util.ResizableHTMLEditorKit;
 import com.bookreader.app.epub.util.ResourceLoader;
+import com.bookreader.app.epub.util.TextWrapHTMLEditorKit;
 
 
 
@@ -91,6 +95,16 @@ public class ContentPane extends JPanel implements NavigationEventListener,
     public static int PAGE_SHIFT=20;
 	
     private static Double zoom=1.0;
+    
+    
+    
+    private int pageCount;
+    private int pageYAxis;
+    
+    
+    
+    
+    
     
    
 	public ContentPane(Navigator navigator) {
@@ -179,57 +193,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		initBook(navigator.getBook());
 		
 		
-		
-		
-		/*JButton zoomInButton = ViewerUtil.createButton("", "+");
-		
-		zoomInButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				zoom=zoom+0.5;
-				editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
-				System.out.println(zoom);
-				
-			}
-		});
-		
-		add(zoomInButton, BorderLayout.NORTH);
-		
-		JButton zoomOutButton = ViewerUtil.createButton("", "-");
-		
-		zoomOutButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				zoom=zoom-0.5;
-				editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
-				System.out.println(zoom);
-			}
-		});
-		
-		add(zoomOutButton, BorderLayout.SOUTH);*/
-		
-		
-		
-		
 	}
 
-	
-	
-	public void setZoomIn(){
-		zoom=zoom+0.5;
-		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
-		System.out.println(zoom);
-	}
-	
-	
-	public void setZoomOut(){
-		zoom=zoom-0.5;
-		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
-		System.out.println(zoom);
-	}
-	
 	
 	private void initBook(Book book) {
 		if (book == null) {
@@ -372,6 +337,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			
 			
 			
+			
+			
 			/*StringWriter writer = new StringWriter();
 			editorPane.getEditorKit().write(writer, document, 0, document.getLength());
 			String s = writer.toString();
@@ -419,7 +386,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			Paper p=new Paper(); //by default LETTER
 	        p.setImageableArea(0,0,p.getWidth(), p.getHeight());
 	        
-	       //editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+	        editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
 			
 	       //initData(editorPane,p,new Insets(18,18,18,18));
 			
@@ -478,19 +445,86 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		}
 	}
 
+	public void pageCalculate(){
+		double maxHeight = scrollPane.getVerticalScrollBar().getMaximum();
+		double viewHeight = scrollPane.getViewport().getHeight();
+	
+		double count=(maxHeight/viewHeight);
+		
+		if(count%1 != 0.0){
+			pageCount=(int) count + 1;
+		}
+		else{
+			pageCount=(int) count;
+		}
+		System.out.println("Number Of pages"+pageCount);	
+	}
+	
+	
+	public void setZoomIn(){
+		
+		
+		/*Iterator it = htmlDocumentFactory.getDocumentCache().entrySet().iterator();
+		
+		while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry) it.next();
+	       // System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	    }*/
+		
+		zoom=zoom+0.5;
+		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
+		setZoom();
+		pageCalculate();
+		
+	}
+	
+	
+	public void setZoomOut(){
+		zoom=zoom-0.5;
+		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
+		setZoom();
+		pageCalculate();
+	}
+	
+	
+	public void setZoom(){
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				scrollPane.revalidate();
+				scrollPane.repaint();
+				/*getRootPane().invalidate();
+                getRootPane().validate();
+                getRootPane().repaint();*/
+			}
+			
+		});
+	}
+	
+	
+	
 	public void gotoPreviousPage() {
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		if (viewPosition.getY() <= 0) {
 			navigator.gotoPreviousSpineSection(this);
+			pageYAxis=Integer.MAX_VALUE;
+			scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), pageYAxis));
 			return;
 		}
-		int viewportHeight = scrollPane.getViewport().getHeight();
-		int newY = (int) viewPosition.getY();
-		newY -= viewportHeight;
-		newY = Math.max(0, newY - viewportHeight);
-		scrollPane.getViewport().setViewPosition(
-				new Point((int) viewPosition.getX(), newY));
 		
+		int viewportHeight = scrollPane.getViewport().getHeight();
+		
+		if(pageYAxis > scrollPane.getVerticalScrollBar().getMaximum())
+			pageYAxis=scrollPane.getVerticalScrollBar().getMaximum();
+		
+		pageYAxis = pageYAxis-viewportHeight;
+		
+		
+ 		scrollPane.getViewport().setViewPosition(
+				new Point((int) viewPosition.getX(), pageYAxis));
+ 		//System.out.println("PreviousPage:"+ pageYAxis);
+		//System.out.println("Max Height"+scrollPane.getVerticalScrollBar().getMaximum());
 		//((CardLayout) this.getLayout()).previous(this);
 	}
 
@@ -504,9 +538,13 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			navigator.gotoNextSpineSection(this);
 			return;
 		}
-		int newY = ((int) viewPosition.getY()) + viewportHeight;
+		pageYAxis = ((int) viewPosition.getY()) + viewportHeight;
 		scrollPane.getViewport().setViewPosition(
-				new Point((int) viewPosition.getX(), newY));
+				new Point((int) viewPosition.getX(), pageYAxis));
+		
+		//System.out.println("NextPage:"+ pageYAxis);
+		pageCalculate();
+		//System.out.println("Max Height"+scrollPane.getVerticalScrollBar().getMaximum());
 		
 		//((CardLayout) this.getLayout()).next(this);
 	}

@@ -28,8 +28,8 @@ public class ApplicationStartUp {
 
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				ApplicationContext ctx = 
-					      new AnnotationConfigApplicationContext(AppConfig.class);	
+				/*ApplicationContext ctx = 
+					      new AnnotationConfigApplicationContext(AppConfig.class);	*/
 				
 				/*System.out.println(ctx.getMessage("find.person.fail", null, "Error reading resource", Locale.US));
 				System.out.println(ctx.getMessage("find.person.fail", null, "Error reading resource", Locale.SIMPLIFIED_CHINESE));*/

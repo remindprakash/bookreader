@@ -22,6 +22,8 @@ import com.bookreader.app.epub.search.SearchResult;
 import com.bookreader.app.epub.search.SearchResults;
 import com.bookreader.app.epub.util.ResourceLoader;
 import com.bookreader.app.epub.util.ToolsResourceUtil;
+import com.bookreader.app.mulipage.PreviewDialog;
+import com.bookreader.app.mulipage.PrintApp;
 
 import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
@@ -87,28 +89,17 @@ public class NavigationBar extends JPanel implements NavigationEventListener {
 		});
 		add(libButton);
 		
-		JButton bookButton = ViewerUtil.createButton("bookmark", "BookMark");
-		bookButton.setFont(historyButtonFont);
-		bookButton.addActionListener(new ActionListener() {
+		
+		JButton LayOutButton = ViewerUtil.createButton("LayOut", "LayOut");
+		LayOutButton.setFont(historyButtonFont);
+		LayOutButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 			}
 		});
-		add(bookButton);
-		
-		
-		JButton showButton = ViewerUtil.createButton("", "Show/Hide");
-		showButton.setFont(historyButtonFont);
-		showButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		add(showButton);
+		add(LayOutButton);
 		
 		
 		JButton zoomInButton = ViewerUtil.createButton("", "+");

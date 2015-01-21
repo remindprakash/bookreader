@@ -60,8 +60,10 @@ public class Viewer {
 	private JFrame mainWindow;
 	private BrowseBar browseBar;
 	private JSplitPane mainSplitPane; 
+	
 	private JSplitPane leftSplitPane;
 	private JPanel rightSplitPane;
+	
 	private Navigator navigator = new Navigator();
 	private NavigationHistory browserHistory;
 	private BookProcessorPipeline epubCleaner = new BookProcessorPipeline(Collections.<BookProcessor>emptyList());
@@ -332,7 +334,7 @@ public class Viewer {
 	
 	public void InitPanes() {
 		InputStream bookStream = null;
-		bookStream = Viewer.class.getResourceAsStream("/welcome.epub");
+		bookStream = Viewer.class.getResourceAsStream("/tirukkural.epub");
 		new Viewer(bookStream);
 	}
 	
