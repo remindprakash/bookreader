@@ -334,14 +334,14 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			
 			Document doc = Jsoup.parse(s);
 			String value = "";
+			String src= "";
 			Elements elements = doc.select("img[src]");
 			for (org.jsoup.nodes.Element element : elements) {
 				value = element.attributes().html();
-
-				value = value.substring(value.indexOf("src=")+5, value.length()-1);
-
-				System.out.println(value);
-				element.attr("src", "http:/" + value);
+				src = value.substring(value.indexOf("src=") + 5, value.length());
+				src = src.substring(0, src.indexOf("\""));
+				System.out.println(src);
+				element.attr("src", "http:/" + src);
 			}
 
 			//System.out.println(doc.html());
