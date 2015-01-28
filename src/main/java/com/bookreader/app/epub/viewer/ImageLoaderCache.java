@@ -132,6 +132,9 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 			
 			// create an image from the resource and add it to the cache
 			result = createImage(imageResource);
+			
+			//result = result.getScaledInstance(400, 600, Image.SCALE_SMOOTH);
+			
 			if (result != null) {
 				cache.put(imageURL.toString(), result);
 			}

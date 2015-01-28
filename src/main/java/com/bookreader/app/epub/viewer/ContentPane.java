@@ -23,25 +23,37 @@ import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Paper;
 import java.awt.print.Printable;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.ElementIterator;
 import javax.swing.text.Position;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.View; 
 
 import nl.siegmann.epublib.Constants;
@@ -53,6 +65,9 @@ import nl.siegmann.epublib.domain.Resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +75,7 @@ import com.bookreader.app.epub.util.DesktopUtil;
 import com.bookreader.app.epub.util.ResizableHTMLEditorKit;
 import com.bookreader.app.epub.util.ResourceLoader;
 import com.bookreader.app.epub.util.TextWrapHTMLEditorKit;
+
 
 
 
@@ -95,8 +111,9 @@ public class ContentPane extends JPanel implements NavigationEventListener,
     public static int PAGE_SHIFT=20;
 	
     private static Double zoom=1.0;
-    
-    
+    private double oldYMax;
+    private double newYMax;
+    private double percentage;
     
     private int pageCount;
     private int pageYAxis;
@@ -116,65 +133,19 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		this.scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		//this.scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
-		this.scrollPane.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-					Point viewPosition = scrollPane.getViewport().getViewPosition();
-					int newY = (int) (viewPosition.getY() + 10);
-					scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
-				}
-			}
-		});
+		
+		//Mouse Wheel Listener page up and down
 		this.scrollPane.addMouseWheelListener(new MouseWheelListener() {
-			
-			private boolean gotoNextPage = false;
-			private boolean gotoPreviousPage = false;
-
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 			    int notches = e.getWheelRotation();
-			    int increment = scrollPane.getVerticalScrollBar().getUnitIncrement(1);
-			    if (notches < 0) {
-					Point viewPosition = scrollPane.getViewport().getViewPosition();
-					if (viewPosition.getY() - increment < 0) {
-						if (gotoPreviousPage) {
-							gotoPreviousPage = false;
-							ContentPane.this.navigator.gotoPreviousSpineSection(-1, ContentPane.this);
-						} else {
-							gotoPreviousPage = true;
-							scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), 0));
-						}
-					}
-			    } else {
-			    	// only move to the next page if we are exactly at the bottom of the current page
-			    	Point viewPosition = scrollPane.getViewport().getViewPosition();
-					int viewportHeight = scrollPane.getViewport().getHeight();
-					int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
-					if (viewPosition.getY() + viewportHeight + increment > scrollMax) {
-						if (gotoNextPage) {
-							gotoNextPage = false;
-							ContentPane.this.navigator.gotoNextSpineSection(ContentPane.this);
-						} else {
-							gotoNextPage = true;
-							int newY = scrollMax - viewportHeight;
-							scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
-						}
-					}
+			    
+			    if(notches < 0){
+			    	gotoPreviousPage();
 			    }
+			    else if(notches > 0){
+			    	gotoNextPage();
+			    } 
 			  }
 		});
 		
@@ -192,6 +163,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		this.htmlDocumentFactory = new HTMLDocumentFactory(navigator, editorPane.getEditorKit());
 		initBook(navigator.getBook());
 		
+		
+        
 		
 	}
 
@@ -273,46 +246,62 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		JEditorPane editorPane = new JEditorPane();
 		
 		editorPane.setBackground(Color.white);
+		
 		editorPane.setEditable(false);
+		editorPane.setOpaque(true);
 		
 		//editorPane.setEditorKit( new HTMLEditorKit());
 		editorPane.setEditorKit( new ResizableHTMLEditorKit());
 		//editorPane.setEditorKit( new TextWrapHTMLEditorKit());
 		
+		//editorPane.setEditorKit( new PageableEditorKit());
+		//Margin Setting
+		editorPane.setMargin(new Insets(0,25,0,25));
+		
+		//Background Setting
+		/*Color bgColor = new Color(45,125,0);
+		editorPane.setBackground(bgColor);*/
+		
+		
+		
+		
+		
+		
+		
+		  
+		
+		
+		
 		
 		editorPane.addHyperlinkListener(this);
-		
-		
-		
-		
 		
 		editorPane.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
+			
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override
 			public void keyPressed(KeyEvent keyEvent) {
+				
 				if (keyEvent.getKeyCode() == KeyEvent.VK_RIGHT) {
 					navigator.gotoNextSpineSection(ContentPane.this);
 				} else if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT) {
 					navigator.gotoPreviousSpineSection(ContentPane.this);
-				} else if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
-				ContentPane.this.gotoPreviousPage();
-				} else if (keyEvent.getKeyCode() == KeyEvent.VK_SPACE
-					|| (keyEvent.getKeyCode() == KeyEvent.VK_DOWN)) {
-					ContentPane.this.gotoNextPage();
+				}
+				else if (keyEvent.getKeyCode() == KeyEvent.VK_PAGE_UP) {
+					gotoPreviousPage();
+				} else if ((keyEvent.getKeyCode() == KeyEvent.VK_PAGE_DOWN)) {
+					gotoNextPage();
 				}
 			}
 		});
-		
 		
 		return editorPane;
 	}
@@ -336,43 +325,54 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			currentResource = resource;
 			
 			
+			editorPane.setContentType("text/html");
 			
-			
-			
-			/*StringWriter writer = new StringWriter();
+			StringWriter writer = new StringWriter();
 			editorPane.getEditorKit().write(writer, document, 0, document.getLength());
 			String s = writer.toString();
 			
-			editorPane.setText(s);*/
 			
+			Document doc = Jsoup.parse(s);
+			String value = "";
+			Elements elements = doc.select("img[src]");
+			for (org.jsoup.nodes.Element element : elements) {
+				value = element.attributes().html();
+
+				value = value.substring(value.indexOf("src=")+5, value.length()-1);
+
+				System.out.println(value);
+				element.attr("src", "http:/" + value);
+			}
+
+			//System.out.println(doc.html());
+			
+			
+			
+			editorPane.setText(doc.html());
 		
+			
+			Dictionary cache = (Dictionary) editorPane.getDocument()
+					.getProperty("imageCache");
+
+			if (cache == null) {
+				cache = new Hashtable();
+				editorPane.getDocument().putProperty("imageCache", cache);
+			}
+
+			URL u = new URL("http:/../Images/cover.jpg");
+
+			cache.put(
+					u,
+					ResourceLoader.getImageCache().get(
+							"http:/../Images/cover.jpg"));
+			
+			
+			
+			//editorPane.setDocument(document);
+			 
 			if(ResourceLoader.getCSSCache().size()!=0 || !ResourceLoader.getCSSCache().isEmpty()){
 				((HTMLDocument)editorPane.getDocument()).getStyleSheet().addRule(IOUtils.toString(ResourceLoader.getCSSCache().get("0"), "UTF-8"));
-				
-				//((HTMLDocument)editorPane.getDocument()).getStyleSheet().importStyleSheet(Viewer.class.getResource("/template.css"));
-				
-			}
-			
-			
-			editorPane.setDocument(document);
-				
-			
-				
-			/*System.out.println("Current Font"+editorPane.getFont().getSize());
-			
-			Font f=editorPane.getFont();
-			
-			// create a new, smaller font from the current font
-			 Font f2 = new Font(f.getFontName(), f.getStyle(), 60);
-			 
-			 // set the new font in the editing area
-			 editorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-			 editorPane.setFont(f2);
-			 
-			 System.out.println("New Font"+editorPane.getFont().getSize());*/
-			
-			
-			
+			}	
 			
 			if(ResourceLoader.getFontCache().size()!=0 || !ResourceLoader.getFontCache().isEmpty()){
 				Font font=ResourceLoader.getFontCache().get("0");
@@ -383,10 +383,14 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			
 			
 			
+			
+			
 			Paper p=new Paper(); //by default LETTER
 	        p.setImageableArea(0,0,p.getWidth(), p.getHeight());
 	        
 	        editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
+	        
+	        editorPane.repaint();
 			
 	       //initData(editorPane,p,new Insets(18,18,18,18));
 			
@@ -470,11 +474,23 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	        Map.Entry pairs = (Map.Entry) it.next();
 	       // System.out.println(pairs.getKey() + " = " + pairs.getValue());
 	    }*/
-		
 		zoom=zoom+0.5;
 		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
 		setZoom();
-		pageCalculate();
+		
+		percentage= (newYMax-oldYMax)/oldYMax*100;
+		
+		//System.out.println(pageYAxis);
+		
+		pageYAxis=pageYAxis+(int) Math.round((pageYAxis*percentage)/100);
+		
+				
+		scrollPane.getViewport().setViewPosition(
+				new Point(0, pageYAxis));
+		
+		
+		//System.out.println(pageYAxis);
+		//pageCalculate();
 		
 	}
 	
@@ -483,23 +499,50 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		zoom=zoom-0.5;
 		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
 		setZoom();
-		pageCalculate();
+		
+		percentage= (newYMax-oldYMax)/oldYMax*100;
+		if(percentage<0)
+			percentage=-percentage;
+		
+		//System.out.println(pageYAxis);
+		
+		pageYAxis=pageYAxis-(int) Math.round((pageYAxis*percentage)/100);
+				
+		scrollPane.getViewport().setViewPosition(
+				new Point(0, pageYAxis));
+		
+		
+		//System.out.println(pageYAxis);
+		
+		
+		//pageCalculate();
 	}
 	
 	
 	public void setZoom(){
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				scrollPane.revalidate();
-				scrollPane.repaint();
-				/*getRootPane().invalidate();
-                getRootPane().validate();
-                getRootPane().repaint();*/
-			}
-			
-		});
+		
+		oldYMax=scrollPane.getVerticalScrollBar().getMaximum();
+		System.out.println(oldYMax);
+		
+		
+		scrollPane.invalidate();
+		scrollPane.validate();
+		scrollPane.repaint();	
+		
+		editorPane.invalidate();
+		editorPane.validate();
+		editorPane.repaint();	
+		
+		getRootPane().invalidate();
+        getRootPane().validate();
+        getRootPane().repaint();
+		
+		
+		newYMax=scrollPane.getVerticalScrollBar().getMaximum();
+		System.out.println(newYMax);
+		
+		
+		
 	}
 	
 	
@@ -507,29 +550,26 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	public void gotoPreviousPage() {
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		if (viewPosition.getY() <= 0) {
-			navigator.gotoPreviousSpineSection(this);
+			ContentPane.this.navigator.gotoPreviousSpineSection(-1, ContentPane.this);
 			pageYAxis=Integer.MAX_VALUE;
-			scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), pageYAxis));
 			return;
 		}
 		
 		int viewportHeight = scrollPane.getViewport().getHeight();
 		
 		if(pageYAxis > scrollPane.getVerticalScrollBar().getMaximum())
-			pageYAxis=scrollPane.getVerticalScrollBar().getMaximum();
+			pageYAxis=scrollPane.getVerticalScrollBar().getMaximum()-viewportHeight;
 		
 		pageYAxis = pageYAxis-viewportHeight;
 		
 		
  		scrollPane.getViewport().setViewPosition(
 				new Point((int) viewPosition.getX(), pageYAxis));
- 		//System.out.println("PreviousPage:"+ pageYAxis);
-		//System.out.println("Max Height"+scrollPane.getVerticalScrollBar().getMaximum());
+ 		
 		//((CardLayout) this.getLayout()).previous(this);
 	}
 
 	public void gotoNextPage() {
-		
 		
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		int viewportHeight = scrollPane.getViewport().getHeight();
@@ -539,12 +579,9 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			return;
 		}
 		pageYAxis = ((int) viewPosition.getY()) + viewportHeight;
+		
 		scrollPane.getViewport().setViewPosition(
 				new Point((int) viewPosition.getX(), pageYAxis));
-		
-		//System.out.println("NextPage:"+ pageYAxis);
-		pageCalculate();
-		//System.out.println("Max Height"+scrollPane.getVerticalScrollBar().getMaximum());
 		
 		//((CardLayout) this.getLayout()).next(this);
 	}
@@ -604,16 +641,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	
 	
 	//Pageable
-	
-	
-	
-	
-
 	public void initData(JEditorPane pane, Paper paper, Insets margins){
-		
-		
-		
-		
 		
 		paper.setSize(getSize().width-40, getSize().height-40);
 		

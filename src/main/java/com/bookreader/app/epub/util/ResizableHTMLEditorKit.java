@@ -2,6 +2,7 @@ package com.bookreader.app.epub.util;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -31,7 +32,8 @@ import javax.swing.text.html.ParagraphView;
  */
 
 public class ResizableHTMLEditorKit extends HTMLEditorKit {
-
+	
+	
      ViewFactory factory = new MyViewFactory();
 
         @Override
@@ -48,7 +50,7 @@ public class ResizableHTMLEditorKit extends HTMLEditorKit {
                 
                 if (o instanceof HTML.Tag) {
                     HTML.Tag kind = (HTML.Tag) o;
-                   
+                  
                     if (kind == HTML.Tag.HTML) {
                         return new HTMLBlockView(elem);
                     }
@@ -69,9 +71,10 @@ public class ResizableHTMLEditorKit extends HTMLEditorKit {
                         // paragraph
            
                         return new HTMLParagraphView(elem);
-                    } else if (kind == HTML.Tag.OBJECT)
-
-                        return new HTMLObjectView(elem);
+                    } else if (kind == HTML.Tag.OBJECT){
+                    	return new HTMLObjectView(elem);
+                    }
+                        
                     
                 }
                 return super.create(elem);

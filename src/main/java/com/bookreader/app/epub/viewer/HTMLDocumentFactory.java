@@ -127,21 +127,7 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 			imageLoaderCache.initImageLoader(document);
 		}
 		
-		//document.getStyleSheet().importStyleSheet(Viewer.class.getResource("/template.css"));
-		/*
-		// initialize the CSSLoader for the specific document
-		if (document != null) {
-			try {
-				System.out.println(IOUtils.toString(ResourceLoader.getCSSCache().get("0"), "UTF-8"));
-				document.getStyleSheet().addRule(IOUtils.toString(ResourceLoader.getCSSCache().get("0"), "UTF-8"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		}
-		*/
+		
 
 		return document;
 	}

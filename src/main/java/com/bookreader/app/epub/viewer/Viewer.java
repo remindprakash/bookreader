@@ -134,12 +134,28 @@ public class Viewer {
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
 		mainPanel.setPreferredSize(new Dimension(1000, 750));
 		
+		
+		
+		
 		mainPanel.add(new NavigationBar(navigator,htmlPane), BorderLayout.NORTH);
 
 		result.add(mainPanel);
 		result.pack();
-		setLayout(Layout.TocContent);
+		setLayout(Layout.Content);
 		result.setVisible(true);
+		
+		result.setMinimumSize(new Dimension(500, 600));
+		
+		
+		result.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent evt) {
+				if(navigator.getCurrentSpinePos()==0 && navigator.getBook().getCoverImage()!=null){
+					//System.out.println(navigator.getBook().getCoverImage().getHref());
+				}
+				
+			}
+		});
+		
 		
 		return result;	
 	}
@@ -334,7 +350,7 @@ public class Viewer {
 	
 	public void InitPanes() {
 		InputStream bookStream = null;
-		bookStream = Viewer.class.getResourceAsStream("/tirukkural.epub");
+		bookStream = Viewer.class.getResourceAsStream("/economic_restructuring.epub");
 		new Viewer(bookStream);
 	}
 	
