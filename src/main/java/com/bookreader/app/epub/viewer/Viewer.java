@@ -117,7 +117,7 @@ public class Viewer {
 		leftSplitPane.setResizeWeight(0.8);
 		
 		rightSplitPane = new JPanel(new BorderLayout());
-		ContentPane htmlPane = new ContentPane(navigator);
+		final ContentPane htmlPane = new ContentPane(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
 		this.browseBar = new BrowseBar(navigator, htmlPane);
@@ -149,8 +149,9 @@ public class Viewer {
 		
 		result.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent evt) {
-				if(navigator.getCurrentSpinePos()==0 && navigator.getBook().getCoverImage()!=null){
-					//System.out.println(navigator.getBook().getCoverImage().getHref());
+				if (navigator.getCurrentSpinePos() == 0
+						&&  navigator.getBook().getCoverImage() != null ) {
+					htmlPane.displayPage(navigator.getCurrentResource(), 0);
 				}
 				
 			}
@@ -351,6 +352,9 @@ public class Viewer {
 	public void InitPanes() {
 		InputStream bookStream = null;
 		bookStream = Viewer.class.getResourceAsStream("/economic_restructuring.epub");
+		//bookStream = Viewer.class.getResourceAsStream("/tirukkural.epub");
+		//bookStream = Viewer.class.getResourceAsStream("/welcome.epub");
+		//bookStream = Viewer.class.getResourceAsStream("/svg-in-spine-20120417");
 		new Viewer(bookStream);
 	}
 	

@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.text.html.StyleSheet;
 
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
 
@@ -58,11 +59,14 @@ public class ResourceLoader {
         	 
         	 List <Resource> cssResource= book.getResources().getResourcesByMediaType(MediatypeService.CSS);
         	 
-        	 List<Resource> imageResource= book.getResources().getResourcesByMediaType(MediatypeService.JPG);
         	 
+        	 MediaType[] mediatypes = { MediatypeService.JPG, MediatypeService.PNG,MediatypeService.GIF };
+        	 List<Resource> imageResource= book.getResources().getResourcesByMediaTypes(mediatypes);
         	 
+        	        	 
         	 fontCache.clear();
         	 CSSCache.clear();
+        	 imageCache.clear();
         	 
         	 for(int i=0;i<fontResource.size();i++){
         		 Font tamilFont = null;
@@ -73,7 +77,6 @@ public class ResourceLoader {
         	 } 
         	 
         	 for(int i=0;i<cssResource.size();i++){
-        		 
         		 CSSCache.put("0", cssResource.get(i).getInputStream());
         	 }
         	 
@@ -93,7 +96,6 @@ public class ResourceLoader {
 		Image result = null;
 		try {
 			result = ImageIO.read(imageResource.getInputStream());
-			result = result.getScaledInstance(400, 600, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}

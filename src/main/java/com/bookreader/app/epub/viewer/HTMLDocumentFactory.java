@@ -238,4 +238,16 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 			imageLoaderCache.clear();
 		}
 	}
+
+	public ImageLoaderCache getImageLoaderCache() {
+		return imageLoaderCache;
+	}
+
+	public void setImageLoaderCache(ImageLoaderCache imageLoaderCache) {
+		this.imageLoaderCache = imageLoaderCache;
+	}
+	
+	
+	
+	
 }

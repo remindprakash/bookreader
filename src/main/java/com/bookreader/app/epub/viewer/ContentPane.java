@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -262,17 +263,6 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		/*Color bgColor = new Color(45,125,0);
 		editorPane.setBackground(bgColor);*/
 		
-		
-		
-		
-		
-		
-		
-		  
-		
-		
-		
-		
 		editorPane.addHyperlinkListener(this);
 		
 		editorPane.addKeyListener(new KeyListener() {
@@ -311,6 +301,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		displayPage(resource, 0);
 	}
 
+
 	public void displayPage(Resource resource, int sectionPos) {
 		if (resource == null) {
 			return;
@@ -333,6 +324,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			
 			
 			Document doc = Jsoup.parse(s);
+			
+			
 			String value = "";
 			String src= "";
 			Elements elements = doc.select("img[src]");
@@ -340,36 +333,82 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 				value = element.attributes().html();
 				src = value.substring(value.indexOf("src=") + 5, value.length());
 				src = src.substring(0, src.indexOf("\""));
-				System.out.println(src);
-				element.attr("src", "http:/" + src);
+				
+				
+				if(src.matches("^\\..*")){
+					element.attr("src", "http:/" + src);
+				}
+				else{
+					element.attr("src", "http:/../" + src);
+				}
+				
 			}
+			
+			
+			
+			Elements links  = doc.select("img[href]");
+			for (org.jsoup.nodes.Element element : links) {
+				value = element.attributes().html();
+				src = value.substring(value.indexOf("href=") + 6, value.length());
+				src = src.substring(0, src.indexOf("\""));
+				System.out.println(src);
+				
+				if(src.matches("^\\..*")){
+					element.attr("href", "http:/" + src);
+				}
+				else{
+					element.attr("href", "http:/../" + src);
+				}
+				
+			}
+			
 
-			//System.out.println(doc.html());
+			
 			
 			
 			
 			editorPane.setText(doc.html());
-		
 			
-			Dictionary cache = (Dictionary) editorPane.getDocument()
-					.getProperty("imageCache");
-
-			if (cache == null) {
-				cache = new Hashtable();
+			editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
+			
+			Hashtable cache = new Hashtable();
+			
+			URL u ;
+			
+			if (navigator.getCurrentSpinePos() == 0  && navigator.getBook().getCoverImage() !=null ) {
+				editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(1.0));
 				editorPane.getDocument().putProperty("imageCache", cache);
+
+				u = new URL("http:/../"+navigator.getBook().getCoverImage().getHref());
+				
+				Image result=ResourceLoader.getImageCache().get("http:/../"+navigator.getBook().getCoverImage().getHref());
+				
+				result = result.getScaledInstance(scrollPane.getSize().width-100, scrollPane.getSize().height-50, Image.SCALE_SMOOTH);
+
+				cache.put(u,result);
+				
+			} else {
+		
+					editorPane.getDocument().putProperty("imageCache", cache);
+					
+					Iterator it = ResourceLoader.getImageCache().entrySet().iterator();
+
+					while (it.hasNext()) {
+
+						Map.Entry pairs = (Map.Entry) it.next();
+						
+						u = new URL(""+pairs.getKey());
+						cache.put(u,ResourceLoader.getImageCache().get(""+pairs.getKey()));
+						//System.out.println(pairs.getKey() + " = "+ pairs.getValue());
+
+					}
 			}
-
-			URL u = new URL("http:/../Images/cover.jpg");
-
-			cache.put(
-					u,
-					ResourceLoader.getImageCache().get(
-							"http:/../Images/cover.jpg"));
 			
 			
 			
 			//editorPane.setDocument(document);
 			 
+			
 			if(ResourceLoader.getCSSCache().size()!=0 || !ResourceLoader.getCSSCache().isEmpty()){
 				((HTMLDocument)editorPane.getDocument()).getStyleSheet().addRule(IOUtils.toString(ResourceLoader.getCSSCache().get("0"), "UTF-8"));
 			}	
@@ -388,10 +427,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			Paper p=new Paper(); //by default LETTER
 	        p.setImageableArea(0,0,p.getWidth(), p.getHeight());
 	        
-	        editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
+	       
 	        
-	        editorPane.repaint();
-			
 	       //initData(editorPane,p,new Insets(18,18,18,18));
 			
 			scrollToCurrentPosition(sectionPos);
@@ -465,15 +502,12 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	}
 	
 	
-	public void setZoomIn(){
+	public String setZoomIn(){
 		
+		if(navigator.getCurrentSpinePos()==0){
+			return "";
+		}
 		
-		/*Iterator it = htmlDocumentFactory.getDocumentCache().entrySet().iterator();
-		
-		while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry) it.next();
-	       // System.out.println(pairs.getKey() + " = " + pairs.getValue());
-	    }*/
 		zoom=zoom+0.5;
 		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
 		setZoom();
@@ -487,6 +521,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 				
 		scrollPane.getViewport().setViewPosition(
 				new Point(0, pageYAxis));
+		return "";
 		
 		
 		//System.out.println(pageYAxis);
@@ -495,7 +530,12 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	}
 	
 	
-	public void setZoomOut(){
+	public String setZoomOut(){
+		
+		if(navigator.getCurrentSpinePos()==0){
+			return "";
+		}
+		
 		zoom=zoom-0.5;
 		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
 		setZoom();
@@ -510,6 +550,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 				
 		scrollPane.getViewport().setViewPosition(
 				new Point(0, pageYAxis));
+		return "";
 		
 		
 		//System.out.println(pageYAxis);

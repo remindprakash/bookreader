@@ -19,6 +19,7 @@ import javax.swing.text.html.BlockView;
 import javax.swing.text.html.CSS;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.ImageView;
 import javax.swing.text.html.InlineView;
 import javax.swing.text.html.ObjectView;
 import javax.swing.text.html.ParagraphView;
@@ -73,7 +74,10 @@ public class ResizableHTMLEditorKit extends HTMLEditorKit {
                         return new HTMLParagraphView(elem);
                     } else if (kind == HTML.Tag.OBJECT){
                     	return new HTMLObjectView(elem);
+                    } else if (kind == HTML.Tag.IMG){
+                    	return new HTMLImageView(elem);
                     }
+                       
                         
                     
                 }
@@ -251,6 +255,14 @@ public class ResizableHTMLEditorKit extends HTMLEditorKit {
                 return super.viewToModel(x, y, alloc, bias);
             }
 
+        }
+        
+        
+        private class HTMLImageView extends ImageView {
+
+        	public HTMLImageView(Element elem) {
+                super(elem);
+            }
         }
         
         
