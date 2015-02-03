@@ -1,16 +1,11 @@
 package com.bookreader.app.epub.viewer;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Hashtable;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -28,17 +23,17 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 		private static final long serialVersionUID = 8436441824668551056L;
 		private final Navigator navigator;
 		
-		JTextField posNumber;
 		
 		public SpineSlider(Navigator navigator) {
-			super(JSlider.HORIZONTAL);
+			super(SwingConstants.HORIZONTAL);
 			this.navigator = navigator;
 			navigator.addNavigationEventListener(this);
 			setPaintLabels(false);
-			posNumber=new JTextField(10);
+			
 			setPreferredSize(new Dimension(0, 50));
 			
 			addChangeListener(new ChangeListener() {
+				@Override
 				public void stateChanged(ChangeEvent evt) {
 					JSlider slider = (JSlider) evt.getSource();
 					int value = slider.getValue();
@@ -62,13 +57,14 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 		private void updateToolTip() {
 			String tooltip = "";
 			if (navigator.getCurrentSpinePos() >= 0 && navigator.getBook() != null) {
-				tooltip = String.valueOf(navigator.getCurrentSpinePos() + 1) + " / " + navigator.getBook().getSpine().size();		
+				tooltip = "Page   " +String.valueOf(navigator.getCurrentSpinePos() + 1) + " of " + navigator.getBook().getSpine().size();		
 			}
 			setToolTipText(tooltip);
 			
 			Hashtable labelTable = new Hashtable();
+			double i=navigator.getBook().getSpine().size()/2;
 			
-			labelTable.put( new Integer( 5 ), new JLabel(tooltip) );
+			labelTable.put( new Integer( (int) Math.round(i) ), new JLabel(tooltip) );
 			
 			setLabelTable( labelTable );
 		
