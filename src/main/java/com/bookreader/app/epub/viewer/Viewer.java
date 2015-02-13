@@ -110,8 +110,10 @@ public class Viewer {
 		
 		leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
+	
+		
 		leftSplitPane.setTopComponent(new TableOfContentsPane(navigator));
-		leftSplitPane.setBottomComponent(new GuidePane(navigator));
+		//leftSplitPane.setBottomComponent(new GuidePane(navigator));
 		leftSplitPane.setOneTouchExpandable(true);
 		leftSplitPane.setContinuousLayout(true);
 		leftSplitPane.setResizeWeight(0.8);
@@ -141,7 +143,7 @@ public class Viewer {
 
 		result.add(mainPanel);
 		result.pack();
-		setLayout(Layout.Content);
+		setLayout(Layout.TocContent);
 		result.setVisible(true);
 		
 		result.setMinimumSize(new Dimension(500, 600));
@@ -353,8 +355,8 @@ public class Viewer {
 		InputStream bookStream = null;
 		bookStream = Viewer.class.getResourceAsStream("/economic_restructuring.epub");
 		//bookStream = Viewer.class.getResourceAsStream("/tirukkural.epub");
-		//bookStream = Viewer.class.getResourceAsStream("/welcome.epub");
-		//bookStream = Viewer.class.getResourceAsStream("/svg-in-spine-20120417");
+		
+		
 		new Viewer(bookStream);
 	}
 	

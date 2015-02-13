@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.*;
 
-import org.icepdf.core.views.DocumentViewController;
+
 import org.icepdf.ri.common.ComponentKeyBinding;
 import org.icepdf.ri.common.MyAnnotationCallback;
 import org.icepdf.ri.common.SwingController;
@@ -19,7 +19,6 @@ public class ReaderService
 	   
     public JPanel ReaderPanel;
     SwingController controller;
-    DocumentViewController viewController;
     String filepath;
     Dimension PanelDim;
     

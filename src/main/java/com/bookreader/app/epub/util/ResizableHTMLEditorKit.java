@@ -1,12 +1,15 @@
 package com.bookreader.app.epub.util;
 
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 
+import javax.swing.Icon;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -52,8 +55,17 @@ public class ResizableHTMLEditorKit extends HTMLEditorKit {
                 if (o instanceof HTML.Tag) {
                     HTML.Tag kind = (HTML.Tag) o;
                   
-                    if (kind == HTML.Tag.HTML) {
-                        return new HTMLBlockView(elem);
+                    if (    (kind == HTML.Tag.LI) 	|| 
+	                		(kind == HTML.Tag.DL) 	||
+	                        (kind == HTML.Tag.DD) 	||
+	                        (kind == HTML.Tag.BODY) ||
+	                        (kind == HTML.Tag.HTML) ||
+	                        (kind == HTML.Tag.CENTER) ||
+	                        (kind == HTML.Tag.DIV) ||
+	                        (kind == HTML.Tag.BLOCKQUOTE) ||
+	                        (kind == HTML.Tag.PRE) ||
+	                        (kind == HTML.Tag.PRE)) {
+	                    return new HTMLBlockView(elem);
                     }
                     else if (kind == HTML.Tag.IMPLIED) {
                         String ws = (String) elem.getAttributes().getAttribute(CSS.Attribute.WHITE_SPACE);
@@ -263,6 +275,29 @@ public class ResizableHTMLEditorKit extends HTMLEditorKit {
         	public HTMLImageView(Element elem) {
                 super(elem);
             }
+        	
+        	
+    	 @Override
+         public void paint(Graphics g, Shape a) {
+    		 Graphics2D g2d = (Graphics2D) g;
+    		     		 
+    		 Rectangle rect = (a instanceof Rectangle) ? (Rectangle)a : a.getBounds();
+    	
+    		 Image img = getImage();
+    		 
+    		 Double scale = (Double) getDocument().getProperty("ZOOM_FACTOR");
+             if (scale >1.0 ) {
+            	 System.out.println(scale);
+            	 g2d.drawImage(img,rect.x, rect.y, rect.width, rect.height, null);
+             }
+             else{
+            	 g2d.drawImage(img, rect.x, rect.y, rect.width, rect.height, null);
+             }
+    		     		    		 
+    	 }
+
+        	
+        	
         }
         
         

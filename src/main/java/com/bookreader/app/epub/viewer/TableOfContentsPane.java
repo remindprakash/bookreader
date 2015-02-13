@@ -1,6 +1,7 @@
 package com.bookreader.app.epub.viewer;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -26,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
+import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -69,17 +72,29 @@ public class TableOfContentsPane extends JPanel  implements
 	 * @param navigator
 	 */
 	public TableOfContentsPane(Navigator navigator) {
-		super(new GridLayout(2, 0));
+		super(new GridLayout(1, 0));
 
 		topPane = new JPanel(new BorderLayout());
 		initTopPane();
-		add(topPane, BorderLayout.NORTH);
+		//add(topPane, BorderLayout.NORTH);
 
 		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
-
+		
 		this.scrollPane = new JScrollPane();
-		add(scrollPane, BorderLayout.SOUTH);
+		
+		
+		
+		
+		//this.scrollPane.setBorder(BorderFactory.createTitledBorder("Table of contents"));
+		
+		this.scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE), "Table of contents", TitledBorder.LEFT, TitledBorder.TOP,
+		          new Font("Times New Roman", Font.BOLD, 20), Color.black));
+		
+		
+		
+		
+		add(scrollPane, BorderLayout.CENTER);
 
 		initBook(navigator.getBook());
 		
@@ -258,6 +273,10 @@ public class TableOfContentsPane extends JPanel  implements
 		tree.setSelectionRow(0);
 		this.scrollPane.getViewport().removeAll();
 		this.tree.setFont(ResourceLoader.getFontCache().get("0"));
+		
+		this.tree.setRootVisible(false);
+		
+		
 		this.scrollPane.getViewport().add(tree);
 
 	}

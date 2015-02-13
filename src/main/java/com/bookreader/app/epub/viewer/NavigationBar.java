@@ -22,8 +22,7 @@ import com.bookreader.app.epub.search.SearchResult;
 import com.bookreader.app.epub.search.SearchResults;
 import com.bookreader.app.epub.util.ResourceLoader;
 import com.bookreader.app.epub.util.ToolsResourceUtil;
-import com.bookreader.app.mulipage.PreviewDialog;
-import com.bookreader.app.mulipage.PrintApp;
+
 
 import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;

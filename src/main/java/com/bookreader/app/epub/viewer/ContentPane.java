@@ -1,5 +1,6 @@
 package com.bookreader.app.epub.viewer;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -38,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -128,8 +130,20 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		
+		/*JButton left = new JButton();
+		left.setPreferredSize(new Dimension(10, getHeight()));
+		add(left,   BorderLayout.WEST);
 		
-		this.scrollPane = (JScrollPane) add(new JScrollPane());
+		JButton right = new JButton();
+		left.setPreferredSize(new Dimension(10, getHeight()));
+		add(right,  BorderLayout.EAST);*/
+		
+		
+		
+		this.scrollPane = new JScrollPane();
+		add(this.scrollPane ,   BorderLayout.CENTER);
+		
+		
 		
 		this.scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		//this.scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -160,6 +174,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		
 		scrollPane.getViewport().add(editorPane);
 		
+		editorPane.setBorder(BorderFactory.createMatteBorder(0,1,0,1, Color.BLUE));
 		
 		this.htmlDocumentFactory = new HTMLDocumentFactory(navigator, editorPane.getEditorKit());
 		initBook(navigator.getBook());
@@ -258,6 +273,8 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		//editorPane.setEditorKit( new PageableEditorKit());
 		//Margin Setting
 		editorPane.setMargin(new Insets(0,25,0,25));
+		
+		
 		
 		//Background Setting
 		/*Color bgColor = new Color(45,125,0);
@@ -504,11 +521,12 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	
 	public String setZoomIn(){
 		
-		if(navigator.getCurrentSpinePos()==0){
+		
+		if(navigator.getCurrentSpinePos()==0 || zoom > 2){
 			return "";
 		}
 		
-		zoom=zoom+0.5;
+		zoom=zoom+0.10;
 		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
 		setZoom();
 		
@@ -532,11 +550,11 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	
 	public String setZoomOut(){
 		
-		if(navigator.getCurrentSpinePos()==0){
+		if(navigator.getCurrentSpinePos()==0 || zoom == 1){
 			return "";
 		}
 		
-		zoom=zoom-0.5;
+		zoom=zoom-0.10;
 		editorPane.getDocument().putProperty("ZOOM_FACTOR", new Double(zoom));
 		setZoom();
 		

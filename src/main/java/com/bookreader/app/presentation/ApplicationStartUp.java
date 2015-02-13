@@ -22,6 +22,8 @@ public class ApplicationStartUp {
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			
+			UIManager.getDefaults().put("Slider.thumbHeight", 1); 
 		} catch (Exception e) {
 			log.error("Unable to set native look and feel", e);
 		}

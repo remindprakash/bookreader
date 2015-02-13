@@ -1,6 +1,6 @@
 package com.bookreader.ui.Reader;
 
-import java.awt.Container;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
-import org.icepdf.core.views.DocumentViewController;
+
 import org.icepdf.ri.common.ComponentKeyBinding;
 import org.icepdf.ri.common.MyAnnotationCallback;
 import org.icepdf.ri.common.SwingController;
@@ -26,7 +26,7 @@ public class PDFViewer
   {
     InputStream localInputStream1 = Thread.currentThread().getContextClassLoader().getResourceAsStream("A1B2C3D4E5.dat");
     InputStream localInputStream2 = PDFEncrypter.decrypt(localInputStream1);
-    localInputStream2 = PDFViewer.class.getResourceAsStream("/pdf-sample.pdf");
+    localInputStream2 = PDFViewer.class.getResourceAsStream("/SE7&funtemental.pdf");
     SwingController localSwingController = new SwingController();
     PDFViewBuilder localPDFViewBuilder = new PDFViewBuilder(localSwingController);
     JPanel localJPanel = localPDFViewBuilder.buildViewerPanel();
