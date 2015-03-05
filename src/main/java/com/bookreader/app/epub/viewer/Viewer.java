@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
 
 import com.bookreader.app.config.AppConfig;
 import com.bookreader.app.epub.util.ResourceLoader;
-import com.bookreader.app.presentation.LibraryUI;
+import com.bookreader.app.presentation.OldLibraryUI;
 import com.bookreader.app.presentation.LoginUI;
 
 

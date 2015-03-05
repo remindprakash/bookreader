@@ -81,8 +81,10 @@ public class LoginUI {
 					// Valid User
 					loginframe.dispose();
 					//JOptionPane.showMessageDialog(this, "Welcome admin !!!");
-					Viewer obj=new Viewer();
-					obj.InitPanes();
+					LibraryUI obj=new LibraryUI();
+					obj.createMainWindow();
+					/*Viewer obj=new Viewer();
+					obj.InitPanes();*/
 				}
 			}
 		});

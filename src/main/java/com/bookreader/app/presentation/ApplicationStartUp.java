@@ -18,6 +18,17 @@ import com.bookreader.app.epub.viewer.Viewer;
 public class ApplicationStartUp {
 	
 	static final Logger log = LoggerFactory.getLogger(ApplicationStartUp.class);
+	private LoginUI login;
+	
+	public void LoginViewer(){
+		try{
+			login = new LoginUI();
+			login.placeComponents();
+		}
+		catch(Exception e){
+			log.error(e.getMessage(), e);
+		}
+	}
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		try {
@@ -30,14 +41,14 @@ public class ApplicationStartUp {
 
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				/*ApplicationContext ctx = 
-					      new AnnotationConfigApplicationContext(AppConfig.class);	*/
+				ApplicationContext ctx = 
+					      new AnnotationConfigApplicationContext(AppConfig.class);	
 				
-				/*System.out.println(ctx.getMessage("find.person.fail", null, "Error reading resource", Locale.US));
-				System.out.println(ctx.getMessage("find.person.fail", null, "Error reading resource", Locale.SIMPLIFIED_CHINESE));*/
+				System.out.println(ctx.getMessage("find.person.fail", null, "Error reading resource", Locale.US));
+				System.out.println(ctx.getMessage("find.person.fail", null, "Error reading resource", Locale.SIMPLIFIED_CHINESE));
 				
-				Viewer viewer = new Viewer();
-				viewer.LoginViewer();
+				ApplicationStartUp object = new ApplicationStartUp();
+				object.LoginViewer();
 			}
 		});
 	}

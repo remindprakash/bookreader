@@ -1,9 +1,8 @@
-package com.bookreader.app.pdf;
+package com.bookreader.app.pdf.viewer;
 
 import java.awt.BorderLayout;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.ResourceBundle;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -11,21 +10,27 @@ import javax.swing.JPanel;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
 import org.icepdf.ri.util.PropertiesManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.bookreader.ui.Reader.PDFViewer;
+import com.bookreader.app.epub.viewer.Viewer;
 
-public class ViewerComponentExample {
+
+public class PDFViewer {
 	
-	public static void main(String[] args) {
-        
-		//System.getProperties().put("org.icepdf.core.awtFontLoading", "true");
+	static final Logger log = LoggerFactory.getLogger(PDFViewer.class);
+	
+	public PDFViewer(){
 		
-        // build a component controller
+	}
+	
+	
+	public PDFViewer(InputStream bookStream){
+		
+		// build a component controller
         SwingController controller = new SwingController();
         
         controller.setIsEmbeddedComponent(true);
-        
-        
         
         PropertiesManager properties = new PropertiesManager(
                 System.getProperties(),new Properties(), 
@@ -43,7 +48,8 @@ public class ViewerComponentExample {
         properties.set(PropertiesManager.PROPERTY_SHOW_TOOLBAR_ANNOTATION, "FALSE");
         properties.set(PropertiesManager.PROPERTY_SHOW_TOOLBAR_FIT, "FALSE");*/
         
-     
+        
+        
         SwingViewBuilder factory = new SwingViewBuilder(controller, properties);
 
         JPanel viewerComponentPanel = factory.buildViewerPanel();
@@ -59,19 +65,15 @@ public class ViewerComponentExample {
 
         // Now that the GUI is all in place, we can try openning a PDF
         
-        InputStream pdfStream = PDFViewer.class.getResourceAsStream("/Bharathiar_Panchali_Sapatham.pdf");
-        //InputStream pdfStream = PDFViewer.class.getResourceAsStream("/HadoopinAction.pdf");
+        //InputStream pdfStream = PDFViewer.class.getResourceAsStream("/Bharathiar_Panchali_Sapatham.pdf");
+        InputStream pdfStream = PDFViewer.class.getResourceAsStream("/HadoopinAction.pdf");
         
         controller.openDocument(pdfStream, "", "");
         
         
 
-
         // show the component
         applicationFrame.pack();
         applicationFrame.setVisible(true);
-    }
-
-	
-	
+	}
 }

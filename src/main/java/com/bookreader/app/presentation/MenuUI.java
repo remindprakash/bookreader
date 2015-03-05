@@ -3,56 +3,50 @@ package com.bookreader.app.presentation;
 import javax.swing.*;
 import java.awt.*;
 
-class MenuUI {
-	JPanel menuPanel;
-	JMenuBar menubar;
-	JMenu file, library, view, help;
-	JMenuItem loginmenu, logoutmenu, exit;
+class MenuUI extends JMenuBar{
+	
+	private static final long serialVersionUID = 1L;
+	
+	JMenu file, view, help,sortby;
+	JMenuItem logoutmenu, exit;
+	
+	
 
 	public MenuUI() {
-		menuPanel = new JPanel(new GridLayout(1, 1));
-		menubar = new JMenuBar();
+		
 		file = new JMenu("File");
-		library = new JMenu("My Library");
 		view = new JMenu("View");
 		help = new JMenu("Help");
-		loginmenu = new JMenuItem("Login");
 		logoutmenu = new JMenuItem("Logout");
 		exit = new JMenuItem("Exit");
+		
+		sortby=new JMenu("Sort by");
 
 		addAllMenu();
 	}
 
 	public void addAllMenu() {
-		menubar.add(file);
-		file.add(loginmenu);
+		add(file);
 		file.add(logoutmenu);
 		file.add(exit);
-		menubar.add(library);
-		menubar.add(view);
-		menubar.add(help);
 
-		menuPanel.add(menubar);
+		add(view);
+		sortByMenu(sortby);
+		view.add(sortby);
+		
+		add(help);
 	}
 
-	public void dispSimpleMenu() {
-		file.setVisible(true);
-		loginmenu.setVisible(true);
-		logoutmenu.setVisible(false);
-		exit.setVisible(true);
-		library.setVisible(false);
-		view.setVisible(false);
-		help.setVisible(false);
+	private void sortByMenu(JMenuItem sortby){
+		
+		sortby.add(new JMenuItem("Recent"));
+		sortby.add(new JMenuItem("Title"));
+		sortby.add(new JMenuItem("Author"));
+		sortby.add(new JMenuItem("Type"));
+		
+		
 	}
 
-	public void dispFullMenu() {
-		file.setVisible(true);
-		loginmenu.setVisible(false);
-		logoutmenu.setVisible(true);
-		exit.setVisible(true);
-		library.setVisible(true);
-		view.setVisible(true);
-		help.setVisible(true);
-	}
+	
 
 }
